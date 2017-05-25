@@ -93,6 +93,7 @@ def synth2(N=128,H=0.5,W=None,Wx=None,Wy=None):
         W = np.fft.fft2(noise1)
         Wx = np.fft.fft(noise2)
         Wy = np.fft.fft(noise3)
+        noises = [noise1, noise2, noise3]
 
     # 2. Increment correlation
 
@@ -178,7 +179,7 @@ def synth2(N=128,H=0.5,W=None,Wx=None,Wy=None):
         for my in range(1,N):
             fBm[mx,my] = fBm[mx,my-1] + fBm[mx-1,my] - fBm[mx-1,my-1] + i2[mx-1,my-1]
 
-    return fBm
+    return fBm, noises
 
 
 if __name__=='__main__':

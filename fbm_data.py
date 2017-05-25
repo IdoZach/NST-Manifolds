@@ -36,12 +36,18 @@ def generate_1d_fbms(N=10000,n=256,reCalc=False):
 
         pickle.dump([Xtrain,Xtest,Ytrain,Ytest],open('data1d.bin','w'))
 
-def generate_2d_fbms(N=10000,n=32,reCalc=False,resize=None):
+def generate_2d_fbms(N=10000,n=32,reCalc=False,resize=None,noise=False):
+    # noise indicates whether or not to include the originating noise with the samples (for cvaes)
     #reCalc = True
     #reCalc = False
-    if os.path.exists('data2d.bin') and not reCalc:
+    if noise:
+        fname = 'data2dn.bin'
+    else:
+        fname = 'data2d.bin'
+
+    if os.path.exists(fname) and not reCalc:
         print 'loading data from file'
-        Xtrain, Xtest, Ytrain, Ytest = pickle.load(open('data2d.bin','r'))
+        Xtrain, Xtest, Ytrain, Ytest = pickle.load(open(fname,'r'))
     else:
         print 'generating data and saving'
         np.random.seed(0)
@@ -51,10 +57,16 @@ def generate_2d_fbms(N=10000,n=32,reCalc=False,resize=None):
             if not k % 100:
                 print 'done %f'%(1.0*k/N)
             #fbmr,fgnr,times= fbm(n-1,i,L=1)
-            fbm = synth2(N=n,H=i)
+            fbm,noises = synth2(N=n,H=i)
             fbm = fbm-np.min(fbm)
             fbm = fbm/np.max(fbm)
-            X.append(fbm)
+
+            if noise:
+                #noises = [np.reshape(x,[1,-1]) for x in noises]
+                #noises = np.hstack(noises)
+                X.append(fbm)
+            else:
+                X.append(fbm)
         X0=np.array(X)
         H = np.array(H)
         Y = H
@@ -72,14 +84,14 @@ def generate_2d_fbms(N=10000,n=32,reCalc=False,resize=None):
 
         Xtrain, Xtest, Ytrain, Ytest = train_test_split(X0,Y,test_size=0.2,random_state=0)
 
-        pickle.dump([Xtrain,Xtest,Ytrain,Ytest],open('data2d.bin','w'))
+        pickle.dump([Xtrain,Xtest,Ytrain,Ytest],open(fname,'w'))
 
     return Xtrain, Xtest, Ytrain, Ytest
 
 class GetOutOfLoop( Exception ):
     pass
 
-def get_kth_imgs(N=10000,n=32,reCalc=False):
+def get_kth_imgs(N=10000,n=32,reCalc=False,resize=None):
     #reCalc = True
     #reCalc = False
 
@@ -130,6 +142,15 @@ def get_kth_imgs(N=10000,n=32,reCalc=False):
         print 'max N',N,'number of patches',len(X)
         Y = H#np.array(H)
         X = np.array(X)
+        if resize is not None:
+            sz=int(np.sqrt(resize))
+            X0r = np.zeros([X.shape[0],sz,sz])
+            for i in range(X.shape[0]):
+                X0r[i,:,:] = imresize(X[i,:,:],[sz,sz])
+                #print X0r[i,:,:]
+                #plt.imshow(X0r[i,:,:],interpolation='none',cmap='gray')
+                #plt.show()
+            X=X0r
         #X = np.expand_dims(np.array(X),3) # to make input of size (n,1) instead of just (n)
         Xtrain, Xtest, Ytrain, Ytest = train_test_split(X,Y,test_size=0.2,random_state=0)
 

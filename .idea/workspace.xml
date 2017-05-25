@@ -2,9 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="99f68a8b-4240-489b-af70-fc7628b514bf" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/gans_1.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/temp2.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/variational_autoencoder_2d_lphp.py" afterPath="$PROJECT_DIR$/variational_autoencoder_2d_lphp.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fbm2d.py" afterPath="$PROJECT_DIR$/fbm2d.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fbm_data.py" afterPath="$PROJECT_DIR$/fbm_data.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vaes_modified1.py" afterPath="$PROJECT_DIR$/vaes_modified1.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -40,27 +44,53 @@
       <file leaf-file-name="fbm_data.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/fbm_data.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
-              <caret line="198" column="21" lean-forward="false" selection-start-line="198" selection-start-column="21" selection-end-line="198" selection-end-column="21" />
+            <state relative-caret-position="-481">
+              <caret line="93" column="4" lean-forward="false" selection-start-line="93" selection-start-column="4" selection-end-line="93" selection-end-column="4" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
-                <element signature="e#2683#4784#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="vaes_modified1.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="vaes_modified1.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/vaes_modified1.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="225">
-              <caret line="36" column="11" lean-forward="false" selection-start-line="36" selection-start-column="11" selection-end-line="36" selection-end-column="11" />
+            <state relative-caret-position="195">
+              <caret line="28" column="11" lean-forward="true" selection-start-line="28" selection-start-column="11" selection-end-line="28" selection-end-column="11" />
+              <folding>
+                <element signature="e#4806#5051#0" expanded="false" />
+                <element signature="e#5094#5759#0" expanded="false" />
+                <element signature="e#8465#9022#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="cvae_1.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/cvae_1.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="254">
+              <caret line="46" column="18" lean-forward="false" selection-start-line="46" selection-start-column="18" selection-end-line="46" selection-end-column="18" />
               <folding>
                 <element signature="e#160#178#0" expanded="true" />
-                <element signature="e#4805#5050#0" expanded="false" />
-                <element signature="e#5093#5758#0" expanded="false" />
-                <element signature="e#8380#8937#0" expanded="false" />
-                <element signature="e#8994#9585#0" expanded="false" />
+                <element signature="e#2123#3534#0" expanded="false" />
+                <element signature="e#3572#5249#0" expanded="false" />
+                <element signature="e#6667#6912#0" expanded="false" />
+                <element signature="e#6955#7620#0" expanded="false" />
+                <element signature="e#9672#10248#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="gans_1.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/gans_1.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-846">
+              <caret line="47" column="14" lean-forward="false" selection-start-line="47" selection-start-column="14" selection-end-line="47" selection-end-column="14" />
+              <folding>
+                <element signature="e#196#214#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -77,12 +107,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>concate</find>
-      <find>imread</find>
-      <find>Conv2D</find>
-      <find>sampling_hp</find>
-      <find>sum_out</find>
-      <find>activation</find>
       <find>noise_dim</find>
       <find>noise_dim/2</find>
       <find>batch_size</find>
@@ -107,6 +131,12 @@
       <find>28</find>
       <find>concat</find>
       <find>Lambda</find>
+      <find>reshape</find>
+      <find>w_log_var</find>
+      <find>list of</find>
+      <find>plt.</find>
+      <find>interactive</find>
+      <find>generate</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -114,10 +144,12 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/fbm_data.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/gans_1.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/variational_autoencoder.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/vaes_orig_mnist.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/main1.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/variational_autoencoder_2d.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/cvae_1.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/variational_autoencoder_2d_lphp.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/vaes_modified1.py" root0="SKIP_INSPECTION" />
   </component>
@@ -129,21 +161,24 @@
         <option value="$PROJECT_DIR$/main1.py" />
         <option value="$PROJECT_DIR$/variational_autoencoder.py" />
         <option value="$PROJECT_DIR$/fbmsyn_trials.py" />
-        <option value="$PROJECT_DIR$/fbm2d.py" />
         <option value="/usr/local/lib/python2.7/dist-packages/keras/utils/vis_utils.py" />
         <option value="$PROJECT_DIR$/variational_autoencoder_2d.py" />
         <option value="$PROJECT_DIR$/temp_stuff.py" />
         <option value="$PROJECT_DIR$/variational_autoencoder_2d_lphp.py" />
-        <option value="$PROJECT_DIR$/fbm_data.py" />
         <option value="$PROJECT_DIR$/vaes_orig_mnist.py" />
         <option value="$PROJECT_DIR$/vaes_modified1.py" />
+        <option value="$PROJECT_DIR$/gans_1.py" />
+        <option value="$PROJECT_DIR$/fbm2d.py" />
+        <option value="$PROJECT_DIR$/temp2.py" />
+        <option value="$PROJECT_DIR$/fbm_data.py" />
+        <option value="$PROJECT_DIR$/cvae_1.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="578" />
+    <option name="x" value="844" />
     <option name="y" value="23" />
-    <option name="width" value="1098" />
+    <option name="width" value="832" />
     <option name="height" value="979" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
@@ -212,24 +247,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$/fbm" />
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
-  <component name="RunManager" selected="Python.fbm_data">
-    <configuration default="false" name="variational_autoencoder_2d" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="python_fbm" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/variational_autoencoder_2d.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
+  <component name="RunManager" selected="Python.cvae_1">
     <configuration default="false" name="fbmsyn_trials" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -294,6 +312,40 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="python_fbm" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/fbm_data.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="gans_1" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="python_fbm" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/gans_1.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="cvae_1" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="python_fbm" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/cvae_1.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -445,20 +497,21 @@
       <option name="USE_KEYWORD" value="false" />
       <method />
     </configuration>
-    <list size="5">
-      <item index="0" class="java.lang.String" itemvalue="Python.variational_autoencoder_2d" />
-      <item index="1" class="java.lang.String" itemvalue="Python.fbmsyn_trials" />
-      <item index="2" class="java.lang.String" itemvalue="Python.variational_autoencoder_2d_lphp" />
-      <item index="3" class="java.lang.String" itemvalue="Python.vaes_orig_mnist" />
-      <item index="4" class="java.lang.String" itemvalue="Python.fbm_data" />
+    <list size="6">
+      <item index="0" class="java.lang.String" itemvalue="Python.fbmsyn_trials" />
+      <item index="1" class="java.lang.String" itemvalue="Python.variational_autoencoder_2d_lphp" />
+      <item index="2" class="java.lang.String" itemvalue="Python.vaes_orig_mnist" />
+      <item index="3" class="java.lang.String" itemvalue="Python.fbm_data" />
+      <item index="4" class="java.lang.String" itemvalue="Python.gans_1" />
+      <item index="5" class="java.lang.String" itemvalue="Python.cvae_1" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.fbm_data" />
-        <item index="1" class="java.lang.String" itemvalue="Python.vaes_orig_mnist" />
-        <item index="2" class="java.lang.String" itemvalue="Python.variational_autoencoder_2d_lphp" />
-        <item index="3" class="java.lang.String" itemvalue="Python.fbmsyn_trials" />
-        <item index="4" class="java.lang.String" itemvalue="Python.variational_autoencoder_2d" />
+        <item index="0" class="java.lang.String" itemvalue="Python.cvae_1" />
+        <item index="1" class="java.lang.String" itemvalue="Python.gans_1" />
+        <item index="2" class="java.lang.String" itemvalue="Python.fbm_data" />
+        <item index="3" class="java.lang.String" itemvalue="Python.vaes_orig_mnist" />
+        <item index="4" class="java.lang.String" itemvalue="Python.variational_autoencoder_2d_lphp" />
       </list>
     </recent_temporary>
   </component>
@@ -466,13 +519,13 @@
     <option name="remove_strategy" value="false" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="578" y="23" width="1098" height="979" extended-state="0" />
+    <frame x="844" y="23" width="832" height="979" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18291551" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18002465" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32894737" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32894737" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.29617834" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.29605263" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -490,7 +543,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="2" />
+      <option name="time" value="3" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -517,7 +570,6 @@
           <caret line="5" column="33" lean-forward="false" selection-start-line="5" selection-start-column="26" selection-end-line="5" selection-end-column="33" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
-            <element signature="e#2683#4784#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -527,11 +579,10 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#160#178#0" expanded="true" />
-            <element signature="e#4805#5050#0" expanded="false" />
-            <element signature="e#5093#5758#0" expanded="false" />
-            <element signature="e#8380#8937#0" expanded="false" />
-            <element signature="e#8994#9585#0" expanded="false" />
+            <element signature="e#160#178#0" expanded="false" />
+            <element signature="e#4806#5051#0" expanded="false" />
+            <element signature="e#5094#5759#0" expanded="false" />
+            <element signature="e#8465#9022#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -558,7 +609,6 @@
           <caret line="5" column="33" lean-forward="false" selection-start-line="5" selection-start-column="26" selection-end-line="5" selection-end-column="33" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
-            <element signature="e#2683#4784#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -567,9 +617,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#160#178#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -763,13 +810,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file:///usr/local/lib/python2.7/dist-packages/keras/engine/topology.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="191">
-          <caret line="1643" column="0" lean-forward="false" selection-start-line="1643" selection-start-column="0" selection-end-line="1643" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/fbm/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -841,13 +881,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/fbm2d.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="3" column="4" lean-forward="false" selection-start-line="3" selection-start-column="4" selection-end-line="3" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/variational_autoencoder_2d_lphp.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="9405">
@@ -868,9 +901,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2624">
           <caret line="201" column="15" lean-forward="true" selection-start-line="201" selection-start-column="15" selection-end-line="201" selection-end-column="15" />
-          <folding>
-            <element signature="e#160#178#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -878,31 +908,94 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="239">
           <caret line="66" column="44" lean-forward="true" selection-start-line="64" selection-start-column="0" selection-end-line="67" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/lib/python2.7/dist-packages/keras/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="917" column="8" lean-forward="false" selection-start-line="917" selection-start-column="8" selection-end-line="917" selection-end-column="8" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/fbm_data.py">
+    <entry file="file://$PROJECT_DIR$/fbm2d.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="198" column="21" lean-forward="false" selection-start-line="198" selection-start-column="21" selection-end-line="198" selection-end-column="21" />
+        <state relative-caret-position="388">
+          <caret line="95" column="10" lean-forward="false" selection-start-line="95" selection-start-column="10" selection-end-line="95" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/lib/python2.7/dist-packages/keras/engine/topology.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="194">
+          <caret line="496" column="8" lean-forward="false" selection-start-line="496" selection-start-column="8" selection-end-line="496" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/lib/python2.7/dist-packages/tensorflow/python/client/session.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="1044" column="9" lean-forward="true" selection-start-line="1044" selection-start-column="9" selection-end-line="1044" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/temp2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="10" column="10" lean-forward="true" selection-start-line="10" selection-start-column="10" selection-end-line="10" selection-end-column="10" />
           <folding>
-            <element signature="e#0#9#0" expanded="true" />
-            <element signature="e#2683#4784#0" expanded="false" />
+            <element signature="e#0#31#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gans_1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-846">
+          <caret line="47" column="14" lean-forward="false" selection-start-line="47" selection-start-column="14" selection-end-line="47" selection-end-column="14" />
+          <folding>
+            <element signature="e#196#214#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/vaes_modified1.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="36" column="11" lean-forward="false" selection-start-line="36" selection-start-column="11" selection-end-line="36" selection-end-column="11" />
+        <state relative-caret-position="195">
+          <caret line="28" column="11" lean-forward="true" selection-start-line="28" selection-start-column="11" selection-end-line="28" selection-end-column="11" />
+          <folding>
+            <element signature="e#4806#5051#0" expanded="false" />
+            <element signature="e#5094#5759#0" expanded="false" />
+            <element signature="e#8465#9022#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fbm_data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-481">
+          <caret line="93" column="4" lean-forward="false" selection-start-line="93" selection-start-column="4" selection-end-line="93" selection-end-column="4" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cvae_1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="254">
+          <caret line="46" column="18" lean-forward="false" selection-start-line="46" selection-start-column="18" selection-end-line="46" selection-end-column="18" />
           <folding>
             <element signature="e#160#178#0" expanded="true" />
-            <element signature="e#4805#5050#0" expanded="false" />
-            <element signature="e#5093#5758#0" expanded="false" />
-            <element signature="e#8380#8937#0" expanded="false" />
-            <element signature="e#8994#9585#0" expanded="false" />
+            <element signature="e#2123#3534#0" expanded="false" />
+            <element signature="e#3572#5249#0" expanded="false" />
+            <element signature="e#6667#6912#0" expanded="false" />
+            <element signature="e#6955#7620#0" expanded="false" />
+            <element signature="e#9672#10248#0" expanded="false" />
           </folding>
         </state>
       </provider>
