@@ -8,6 +8,7 @@ from fbm.fbm import fbm
 from sklearn.model_selection import train_test_split
 from PIL import Image
 from scipy.misc import imresize
+from scipy.stats import kurtosis
 
 import tensorflow as tf
 import keras.backend as K
@@ -131,7 +132,10 @@ def get_kth_imgs(N=10000,n=32,reCalc=False,resize=None):
                         if patch.shape[0]<p or patch.shape[1]<p:
                             continue
                         h,_ = hurst2d(patch,max_tau=7)
-                        H.append(h)
+                        # estimate Gaussianity via kurtosis
+                        kurt = kurtosis(patch.flatten())
+                        #print(kurt)
+                        H.append([h, kurt])
                         names.append(f)
                         X.append(patch)
                         if len(X)>=N:
@@ -140,7 +144,7 @@ def get_kth_imgs(N=10000,n=32,reCalc=False,resize=None):
         except GetOutOfLoop:
             pass
         print 'max N',N,'number of patches',len(X)
-        Y = H#np.array(H)
+        Y = np.vstack(H)#Hnp.array(H)
         X = np.array(X)
         if resize is not None:
             sz=int(np.sqrt(resize))

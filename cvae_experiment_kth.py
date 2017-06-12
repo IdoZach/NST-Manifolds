@@ -4,6 +4,9 @@ Reference: "Auto-Encoding Variational Bayes" https://arxiv.org/abs/1312.6114
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import norm
+from scipy.stats import kurtosis
+from scipy.misc import imsave
+from scipy.misc import imresize
 
 from keras.layers import Input, Dense, Lambda, Layer
 from keras.layers import ConvLSTM2D, Conv2D, Conv2DTranspose, Flatten, Reshape, merge, Merge
@@ -343,17 +346,26 @@ encoder = Model([x, noise], z_mean)
 ## ( todo separator ) display a 2D plot of the digit classes in the latent space
 x_test_encoded = encoder.predict([x_test, noise_test], batch_size=batch_size)
 plt.figure(figsize=(6, 6))
-# first item in y is H, second it kurtosis
+# first item in y is H, second is kurtosis
 # next 10 are phase related
-z = np.polyfit(range(10),y_test[:,2:].T,deg=2)
-plt.scatter(x_test_encoded[:, 0], x_test_encoded[:, 2], c=z[2,:], lw=0, s=8)
+z = np.polyfit(range(10),np.log(1+y_test[:,2:]).T,deg=2)
+latdisp = [0, 2]
+plt.scatter(x_test_encoded[:, latdisp[0]], x_test_encoded[:, latdisp[1]], c=z[2,:], lw=0, s=8)
+
 #plt.scatter(x_test_encoded[:, 0], z[2,:], lw=0, s=8)
-#plt.scatter(x_test_encoded[:, 4], x_test_encoded[:, 1], c=np.mean(y_test[:,2:4],axis=1),lw=0,s=8)
-#plt.scatter(x_test_encoded[:, 1], x_test_encoded[:, 1], c=np.log(y_test[:,1]),lw=0,s=8)
-#plt.scatter(x_test_encoded[:, 4], x_test_encoded[:, 4], c=y_test[:,0],lw=0,s=8)
-#plt.scatter(x_test_encoded[:, 4], np.log(y_test[:,1]),lw=0,s=8)
+
+#plt.scatter(x_test_encoded[:, latdisp[0]], x_test_encoded[:, latdisp[1]], c=np.mean(y_test[:,2:4],axis=1),lw=0,s=8)
+#plt.scatter(x_test_encoded[:, latdisp[0]], x_test_encoded[:, latdisp[1]], c=np.log(y_test[:,1]),lw=0,s=8)
+
+#plt.scatter(x_test_encoded[:, latdisp[0]], x_test_encoded[:, latdisp[1]], c=y_test[:,1],lw=0,s=8)
+
+#plt.scatter(x_test_encoded[:,3], y_test,lw=0,s=8)
+plt.xlabel('Latent variable %d'%latdisp[0])
+plt.ylabel('Latent variable %d'%latdisp[1])
 plt.colorbar()
 plt.show()
+#plt.savefig('exp_fbm_lat.pdf')
+## todo separation line
 
 # build a digit generator that can sample from the learned distribution
 decoder_input = Input(shape=(latent_dim,))
@@ -365,16 +377,19 @@ _x_decoded_mean, _ = use_decoder(_z_cond,units)
 generator = Model([decoder_input, decoder_input_w], _x_decoded_mean)
 
 # display a 2D manifold of the digits
-n = 15  # figure with 15x15 digits
+n = 100  # figure with 15x15 digits
 digit_size = int(np.sqrt(original_dim))
 figure = np.zeros((digit_size * n, digit_size * n))
-h_figure = np.zeros((n,n,2))
 # linearly spaced coordinates on the unit square were transformed through the inverse CDF (ppf) of the Gaussian
 # to produce values of the latent variables z, since the prior of the latent space is Gaussian
+h_figure = np.zeros((n,n,3))
 grid_x = norm.ppf(np.linspace(0.05, 0.95, n))
 grid_y = norm.ppf(np.linspace(0.05, 0.95, n))
-## todo separation line
+
 figure2 = np.zeros((digit_size * n, digit_size * n))
+example_imgs = np.zeros((digit_size, digit_size,6))
+example_Hs_ind = 0
+example_imgs_stats = np.zeros((6,3))
 def mat2gray(x):
     x = x - np.min(x)
     x = x / np.max(x)
@@ -394,10 +409,20 @@ for i, yi in enumerate(grid_x):
 
         x_decoded = generator.predict([z_sample,w_sample])
         digit = x_decoded[0].reshape(digit_size, digit_size)
-        h_figure[i,j,:] = fbm_data.hurst2d(digit,max_tau=5)
-        hh, r2 = h_figure[i,j,:]
+        h_est = fbm_data.hurst2d(digit,max_tau=5)
+        grad = np.gradient(digit)
+        kurt = kurtosis(grad[0][2:-1,2:-1].flatten())
+        #kurt = kurtosis(grad[0][2:-1,2:-1].flatten())
+        hh, r2 = h_est
+        h_figure[i,j,:] = np.array([hh, r2, kurt])
 
-        if hh<0.5 and False:
+        hh_entry = int(hh*10)-3
+        if hh_entry>=0 and hh_entry<6:
+            example_imgs[:,:,hh_entry] = mat2gray(digit)
+            example_imgs_stats[hh_entry,:] = [hh, r2, kurt]
+
+
+        if hh<0.5:# and False:
             plt.hold(False)
             plt.imshow(digit,interpolation='none')
             plt.title('H=%f, R^2=%f'%(hh,r2))
@@ -422,13 +447,42 @@ figure=figure-np.min(figure)
 figure=figure/np.max(figure)
 _,pp=plt.subplots(2,2)
 pp[0,0].imshow(figure, cmap='gray',interpolation='none')
-pp[1,1].imshow(figure2, cmap='gray',interpolation='none')
+#pp[1,1].imshow(figure2, cmap='gray',interpolation='none')
 #.show()
-res=pp[0,1].imshow(h_figure[:,:,0],cmap='gray',interpolation='none')
+## (todo separator) display several examples
+example_im = np.vstack(np.transpose(example_imgs,[2,0,1])).T
+plt.imshow(example_im,interpolation='none',cmap='gray')
+print example_imgs_stats
+imsave('syn_fbms.png',imresize(example_im,example_im.shape*4,interp='nearest'))
+
+
+## ( todo separator ) display h values
+plt.figure(1)
+plt.clf()
+plt.imshow(h_figure[:,:,0],cmap='gray',interpolation='none',
+           extent= [ grid_x[0], grid_x[-1] ,grid_y[0], grid_y[-1]] )
+plt.xlabel('Latent variable 0')
+plt.ylabel('Latent variable 1')
+plt.colorbar()
 plt.colorbar(res,ax=pp[0,1])
-pp[0,1].set_title('H')
+plt.savefig('exp_fbm_syn_h.pdf')
+## ( todo separator )
 res=pp[1,0].imshow(h_figure[:,:,1],cmap='gray',interpolation='none')
 plt.colorbar(res,ax=pp[1,0])
 pp[1,0].set_title('R^2')
+res=pp[1,1].imshow(h_figure[:,:,2],cmap='gray',interpolation='none')
+plt.colorbar(res,ax=pp[1,1])
+pp[1,1].set_title('Kurtosis')
 
-#plt.show()
+## ( todo separator ) show scatter of K vs H
+plt.figure(1,figsize=(8,5))
+plt.hold(False)
+plt.scatter(h_figure[:,:,0].flatten(),
+            h_figure[:,:,2].flatten(),
+            #c=h_figure[:,:,1].flatten() ,
+            lw=0,s=8)
+plt.xlabel('H')
+plt.ylabel('Kurtosis')
+plt.savefig('exp_fbm_syn1.pdf')
+#plt.colorbar(format='%1.2e')
+plt.show()

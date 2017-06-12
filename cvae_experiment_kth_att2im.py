@@ -4,9 +4,13 @@ Reference: "Auto-Encoding Variational Bayes" https://arxiv.org/abs/1312.6114
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import norm
+from scipy.stats import kurtosis
+from scipy.misc import imsave
+from scipy.misc import imresize
 
-from keras.layers import Input, Dense, Lambda, Layer
-from keras.layers import ConvLSTM2D, Conv2D, Conv2DTranspose, Flatten, Reshape, merge, Merge
+from keras.layers import Input, Dense, Lambda, Layer, Activation
+from keras.layers import ConvLSTM2D, Conv2D, Conv2DTranspose, Flatten, Reshape, merge, Merge, MaxPool2D, ZeroPadding2D
+from keras.layers.normalization import BatchNormalization
 from keras.layers.merge import Concatenate
 from tensorflow.contrib.keras import layers as tf_lay
 from keras.models import Model
@@ -21,7 +25,7 @@ from fbm_data import generate_2d_fbms, get_kth_imgs
 from local_phase_model import LocalPhase
 
 # train the VAE on MNIST digits
-original_dim = 784
+original_dim = 32*32# 784
 original_dim2 = int(np.sqrt(original_dim))
 (x_train0, y_train0), (x_test0, y_test0) = mnist.load_data()
 n=32
@@ -52,7 +56,7 @@ latent_dim_w = 64
 intermediate_dim = 256
 intermediate_dim2 = 256
 intermediate_dim3 = 128
-epochs = 10
+epochs = 20
 epsilon_std = 1.0
 
 
@@ -145,8 +149,85 @@ def my_decoder(z,w,units=None):
     decoded = Flatten()(rnn_res)
 
     return decoded, units
+
+
+# -------------------------------------------------------------------------
+
+
 # -------------------------------------------------------------------------
 # --------end my implementation--------------------------------------------
+
+# ----------- att2image-type implementation -------------------------------
+
+my2_conv_channels = [64, 128, 256, 256]
+my2_conv_filts = [5, 5, 3, 4]
+my2_prepad = [True, True, True, False]
+my2_dense = [256]
+def cv2_encoder(x, noise):
+
+    #h = Dense(intermediate_dim, activation='relu')(x)
+    #x_in1 = Concatenate()([x, noise])
+    #x_in = Dense(original_dim)(x_in1)
+    #x_in = Reshape((original_dim2,original_dim2))(x_in)
+    x_in = Reshape((original_dim2,original_dim2))(x)
+    x_ = Lambda( lambda x: K.expand_dims(x,3))(x_in)
+
+    # create network
+    enc_net = []
+    for chan,filt,pad in zip(my2_conv_channels, my2_conv_filts, my2_prepad):
+        if pad:
+            enc_net.append(ZeroPadding2D((filt/2,filt/2)))
+        enc_net.append(Conv2D(chan,filt))
+        #enc_net.append(BatchNormalization())
+        enc_net.append(Activation('relu'))
+        if pad:
+            enc_net.append(MaxPool2D())
+    enc_net.append(Flatten())
+    for sz in my2_dense:
+        enc_net.append(Dense(sz))
+
+    # encode
+    print('enc net',enc_net)
+    for lay in enc_net:
+        x_ = lay(x_)
+    # x_ is now of size 1024
+
+    z_mean = Dense(latent_dim,activation='relu')(x_)
+    z_log_var = Dense(latent_dim,activation='relu')(x_)
+
+    #w_mean = Dense(latent_dim_w)(h)
+    #w_log_var = Dense(latent_dim_w)(h)
+
+    return z_mean, z_log_var# , w_mean, w_log_var
+
+def cv2_decoder(z_cond,units=None):
+    #dd = original_dim2 - fsize + 1
+    #n_filters = 5
+    if units is None:
+        dec_net = []
+        dec_net.append(Dense(256,activation='relu'))
+        for sz in my2_dense[::-1]:
+            dec_net.append(Dense(sz,activation='relu'))
+        dec_net.append(Reshape((1,1,my2_dense[-1])))
+        # 1 x 1 x 256
+        for chan,filt,pad in zip(my2_conv_channels[::-1], my2_conv_filts[::-1], my2_prepad[::-1]):
+            strides = (1,1)#(1,1) if pad else (1,1)
+            dec_net.append(Conv2DTranspose(chan,filt,strides=strides))
+            #dec_net.append(BatchNormalization())
+            dec_net.append(Activation('relu'))
+        dec_net.append(Conv2DTranspose(1,6,strides=(2,2),activation='relu'))
+        dec_net.append(Flatten())
+
+        units = dec_net
+
+    #d_ = Dense(256,activation='relu')(z_cond)
+    d_ = Lambda(lambda x: x)(z_cond) # identity...
+    print('UNITS',units)
+    for lay in units:
+        d_ = lay(d_)
+
+    print('decoded',d_)
+    return d_, units
 
 # -------- cvae implementation --------------------------------------------
 
@@ -230,11 +311,11 @@ def default_decoder(z,w,units=None):
     return x_decoded_mean, units
 
 
-use_encoder = cv_encoder if use_my else default_encoder
-use_decoder = cv_decoder if use_my else default_decoder
+use_encoder = cv2_encoder if use_my else default_encoder
+use_decoder = cv2_decoder if use_my else default_decoder
 
 #z_mean, z_log_var, w_mean, w_log_var = use_encoder(x,noise)
-z_mean, z_log_var = use_encoder(x_cond)
+z_mean, z_log_var = use_encoder(x,noise)
 
 def sampling(args):
     z_mean, z_log_var = args
@@ -257,8 +338,6 @@ z_cond = merge([z, noise],mode='concat',concat_axis=1)
 
 x_decoded_mean, units = use_decoder(z_cond)
 
-
-
 # Custom loss layer
 class CustomVariationalLayer(Layer):
     def __init__(self, **kwargs):
@@ -266,7 +345,8 @@ class CustomVariationalLayer(Layer):
         super(CustomVariationalLayer, self).__init__(**kwargs)
 
     def vae_loss(self, x, x_decoded_mean):
-        xent_loss = original_dim * metrics.binary_crossentropy(x, x_decoded_mean)
+        #xent_loss = original_dim * metrics.binary_crossentropy(x, x_decoded_mean)
+        xent_loss = original_dim * metrics.mean_squared_error(x, x_decoded_mean)
         kl_loss = - 0.5 * K.sum(1 + z_log_var - K.square(z_mean) - K.exp(z_log_var), axis=-1)
         #kl_loss_w = - 0.5 * K.sum(1 + w_log_var - K.square(w_mean) - K.exp(w_log_var), axis=-1)
         return K.mean(xent_loss + kl_loss)# + kl_loss_w)
@@ -316,8 +396,10 @@ rmsprop = RMSprop()
 vae.compile(optimizer='rmsprop', loss=None)#vae_loss)
 
 
-x_train = x_train0.astype('float32') / 255.
-x_test = x_test0.astype('float32') / 255.
+x_train = x_train0.astype('float32') / 128.
+x_test = x_test0.astype('float32') / 128.
+#x_train = x_train - 1
+#x_test = x_test - 1
 x_train = x_train.reshape((len(x_train), np.prod(x_train.shape[1:])))
 x_test = x_test.reshape((len(x_test), np.prod(x_test.shape[1:])))
 y_train = y_train0
@@ -343,17 +425,26 @@ encoder = Model([x, noise], z_mean)
 ## ( todo separator ) display a 2D plot of the digit classes in the latent space
 x_test_encoded = encoder.predict([x_test, noise_test], batch_size=batch_size)
 plt.figure(figsize=(6, 6))
-# first item in y is H, second it kurtosis
+# first item in y is H, second is kurtosis
 # next 10 are phase related
-z = np.polyfit(range(10),y_test[:,2:].T,deg=2)
-plt.scatter(x_test_encoded[:, 0], x_test_encoded[:, 2], c=z[2,:], lw=0, s=8)
+z = np.polyfit(range(10),np.log(1+y_test[:,2:]).T,deg=2)
+latdisp = [0, 2]
+plt.scatter(x_test_encoded[:, latdisp[0]], x_test_encoded[:, latdisp[1]], c=z[2,:], lw=0, s=8)
+
 #plt.scatter(x_test_encoded[:, 0], z[2,:], lw=0, s=8)
-#plt.scatter(x_test_encoded[:, 4], x_test_encoded[:, 1], c=np.mean(y_test[:,2:4],axis=1),lw=0,s=8)
-#plt.scatter(x_test_encoded[:, 1], x_test_encoded[:, 1], c=np.log(y_test[:,1]),lw=0,s=8)
-#plt.scatter(x_test_encoded[:, 4], x_test_encoded[:, 4], c=y_test[:,0],lw=0,s=8)
-#plt.scatter(x_test_encoded[:, 4], np.log(y_test[:,1]),lw=0,s=8)
+
+#plt.scatter(x_test_encoded[:, latdisp[0]], x_test_encoded[:, latdisp[1]], c=np.mean(y_test[:,2:4],axis=1),lw=0,s=8)
+#plt.scatter(x_test_encoded[:, latdisp[0]], x_test_encoded[:, latdisp[1]], c=np.log(y_test[:,1]),lw=0,s=8)
+
+#plt.scatter(x_test_encoded[:, latdisp[0]], x_test_encoded[:, latdisp[1]], c=y_test[:,1],lw=0,s=8)
+
+#plt.scatter(x_test_encoded[:,3], y_test,lw=0,s=8)
+plt.xlabel('Latent variable %d'%latdisp[0])
+plt.ylabel('Latent variable %d'%latdisp[1])
 plt.colorbar()
 plt.show()
+#plt.savefig('exp_fbm_lat.pdf')
+## todo separation line
 
 # build a digit generator that can sample from the learned distribution
 decoder_input = Input(shape=(latent_dim,))
@@ -365,16 +456,19 @@ _x_decoded_mean, _ = use_decoder(_z_cond,units)
 generator = Model([decoder_input, decoder_input_w], _x_decoded_mean)
 
 # display a 2D manifold of the digits
-n = 15  # figure with 15x15 digits
+n = 10  # figure with 15x15 digits
 digit_size = int(np.sqrt(original_dim))
 figure = np.zeros((digit_size * n, digit_size * n))
-h_figure = np.zeros((n,n,2))
 # linearly spaced coordinates on the unit square were transformed through the inverse CDF (ppf) of the Gaussian
 # to produce values of the latent variables z, since the prior of the latent space is Gaussian
+h_figure = np.zeros((n,n,3))
 grid_x = norm.ppf(np.linspace(0.05, 0.95, n))
 grid_y = norm.ppf(np.linspace(0.05, 0.95, n))
-## todo separation line
+
 figure2 = np.zeros((digit_size * n, digit_size * n))
+example_imgs = np.zeros((digit_size, digit_size,6))
+example_Hs_ind = 0
+example_imgs_stats = np.zeros((6,3))
 def mat2gray(x):
     x = x - np.min(x)
     x = x / np.max(x)
@@ -394,10 +488,20 @@ for i, yi in enumerate(grid_x):
 
         x_decoded = generator.predict([z_sample,w_sample])
         digit = x_decoded[0].reshape(digit_size, digit_size)
-        h_figure[i,j,:] = fbm_data.hurst2d(digit,max_tau=5)
-        hh, r2 = h_figure[i,j,:]
+        h_est = fbm_data.hurst2d(digit,max_tau=5)
+        grad = np.gradient(digit)
+        kurt = kurtosis(grad[0][2:-1,2:-1].flatten())
+        #kurt = kurtosis(grad[0][2:-1,2:-1].flatten())
+        hh, r2 = h_est
+        h_figure[i,j,:] = np.array([hh, r2, kurt])
 
-        if hh<0.5 and False:
+        hh_entry = int(hh*10)-3
+        if hh_entry>=0 and hh_entry<6:
+            example_imgs[:,:,hh_entry] = mat2gray(digit)
+            example_imgs_stats[hh_entry,:] = [hh, r2, kurt]
+
+
+        if hh<0.5:# and False:
             plt.hold(False)
             plt.imshow(digit,interpolation='none')
             plt.title('H=%f, R^2=%f'%(hh,r2))
@@ -422,13 +526,42 @@ figure=figure-np.min(figure)
 figure=figure/np.max(figure)
 _,pp=plt.subplots(2,2)
 pp[0,0].imshow(figure, cmap='gray',interpolation='none')
-pp[1,1].imshow(figure2, cmap='gray',interpolation='none')
+#pp[1,1].imshow(figure2, cmap='gray',interpolation='none')
 #.show()
-res=pp[0,1].imshow(h_figure[:,:,0],cmap='gray',interpolation='none')
+## (todo separator) display several examples
+example_im = np.vstack(np.transpose(example_imgs,[2,0,1])).T
+plt.imshow(example_im,interpolation='none',cmap='gray')
+print example_imgs_stats
+imsave('syn_fbms.png',imresize(example_im,example_im.shape*4,interp='nearest'))
+
+
+## ( todo separator ) display h values
+plt.figure(1)
+plt.clf()
+plt.imshow(h_figure[:,:,0],cmap='gray',interpolation='none',
+           extent= [ grid_x[0], grid_x[-1] ,grid_y[0], grid_y[-1]] )
+plt.xlabel('Latent variable 0')
+plt.ylabel('Latent variable 1')
+plt.colorbar()
 plt.colorbar(res,ax=pp[0,1])
-pp[0,1].set_title('H')
+plt.savefig('exp_fbm_syn_h.pdf')
+## ( todo separator )
 res=pp[1,0].imshow(h_figure[:,:,1],cmap='gray',interpolation='none')
 plt.colorbar(res,ax=pp[1,0])
 pp[1,0].set_title('R^2')
+res=pp[1,1].imshow(h_figure[:,:,2],cmap='gray',interpolation='none')
+plt.colorbar(res,ax=pp[1,1])
+pp[1,1].set_title('Kurtosis')
 
-#plt.show()
+## ( todo separator ) show scatter of K vs H
+plt.figure(1,figsize=(8,5))
+plt.hold(False)
+plt.scatter(h_figure[:,:,0].flatten(),
+            h_figure[:,:,2].flatten(),
+            #c=h_figure[:,:,1].flatten() ,
+            lw=0,s=8)
+plt.xlabel('H')
+plt.ylabel('Kurtosis')
+plt.savefig('exp_fbm_syn1.pdf')
+#plt.colorbar(format='%1.2e')
+plt.show()
