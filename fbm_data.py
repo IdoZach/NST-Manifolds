@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 from PIL import Image
 from scipy.misc import imresize
 from scipy.stats import kurtosis
-
+from coherence import coherence
 import tensorflow as tf
 import keras.backend as K
 
@@ -104,19 +104,23 @@ def get_kth_imgs(N=10000,n=32,reCalc=False,resize=None):
         X = []
         H = []
         names = []
-        path0 = '/home/ido/combined_model_classification/KTH-TIPS2-b/wool/'
-        path = ['sample_', '/']
+        path0 = '/home/ido/combined_model_classification/KTH-TIPS2-b/'
+        samples = ['wool', 'cotton', 'cracker']
+        path = ['/sample_', '/']
 
         dirs = ['a','b','c','d']
         files = []
-        for d in dirs:
-            path1 = path0+path[0]+d+path[1]
-            files += [path1+f for f in listdir(path1)]
+        for sample in samples:
+            for d in dirs:
+                path1 = path0+sample+path[0]+d+path[1]
+                files += [path1+f for f in listdir(path1)]
+                names += [sample+d for i in range(len(listdir(path1)))]
         print 'tot files:',len(files)
         p = n
+        samp_names=[]
         try:
-            for i,f in enumerate(files):
-                print i,': file',f
+            for i,(f,name) in enumerate(zip(files,names)):
+                print i,'name',name,'file',f
                 img = Image.open(f).convert('L')
                 (width, height) = img.size
                 img = np.array(list(img.getdata()))
@@ -126,6 +130,8 @@ def get_kth_imgs(N=10000,n=32,reCalc=False,resize=None):
                 for k in range(0,sz[0],p):
                     for l in range(0,sz[1],p):
                         patch = img[k:k+p,l:l+p]*1.0
+                        if np.min(patch.shape) == 0:
+                            continue
                         patch = patch-np.min(patch)
                         patch = patch/np.max(patch)
                         #print patch
@@ -134,9 +140,10 @@ def get_kth_imgs(N=10000,n=32,reCalc=False,resize=None):
                         h,_ = hurst2d(patch,max_tau=7)
                         # estimate Gaussianity via kurtosis
                         kurt = kurtosis(patch.flatten())
+                        coh = coherence(patch)
                         #print(kurt)
-                        H.append([h, kurt])
-                        names.append(f)
+                        H.append([h, kurt, name, np.mean(coh['logcoh']), np.std(coh['logcoh'])])
+                        samp_names.append(name)
                         X.append(patch)
                         if len(X)>=N:
                             print 'too many images'
@@ -144,7 +151,7 @@ def get_kth_imgs(N=10000,n=32,reCalc=False,resize=None):
         except GetOutOfLoop:
             pass
         print 'max N',N,'number of patches',len(X)
-        Y = np.vstack(H)#Hnp.array(H)
+        Y = np.vstack(H)
         X = np.array(X)
         if resize is not None:
             sz=int(np.sqrt(resize))
