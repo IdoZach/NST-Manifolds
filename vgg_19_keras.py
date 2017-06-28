@@ -443,7 +443,13 @@ class SynData():
         if load is None:
             load = {'mean':True, 'std': True, 's': True}
         #alphas[:]=0.0
-        print 'PARAMS: ii %d order %d alphas'%(ii,order),alphas,'load',load
+
+        print 'PARAMS: exp %d ii %d order %d alphas'%(exp_no,ii,order),alphas,'load',load
+        with open('res/exp_%d_log.txt'%exp_no,'w') as f:
+            strr = 'PARAMS: exp %d ii %d order %d alphas %s load %s'%(exp_no,ii,order,str(alphas),str(load))
+            f.write(strr)
+
+
         #desc_mean_out_modified = [ np.array([t[ii]]) for t in train_vars_compressed ]
         #desc_mean_out_modified2 = [ np.array([t[i2]]) for t in train_vars_compressed ]
         #desc_mean_out_modified = [ a*g+(1-a)*h for a,g,h in
@@ -507,8 +513,8 @@ class SynData():
         if self.use_ae:
             pickle.dump([all_pred, all_enc, y_train0],open('all_pred.bin','w'))
         print 'saving images...'
-        plt.imsave('exp_%d_im_src_%d.png'%(exp_no,i2),x_train0[i2]/255.0,cmap=plt.cm.gray)
-        plt.imsave('cur_%d_im_%d.png'%(exp_no,ii),x_train0[ii]/255.0,cmap=plt.cm.gray)
+        plt.imsave('res/exp_%d_im_src_%d.png'%(exp_no,i2),x_train0[i2]/255.0,cmap=plt.cm.gray)
+        plt.imsave('res/exp_%d_im_%d.png'%(exp_no,ii),x_train0[ii]/255.0,cmap=plt.cm.gray)
 
         F0 = self.get_G_kth(texture,x_train0[ii])
         UsVS = self.get_svds(F0)
@@ -866,9 +872,9 @@ class Texture():
                 im = np.reshape(x,imsize)[:,:,::-1]
                 im = np.sum(im,axis=2)/3.0 # turn to grayscale
                 plt.imshow(im,cmap=plt.cm.gray)
-                plt.imsave('syn_res.png',im,cmap=plt.cm.gray)
+                plt.imsave('res/syn_res.png',im,cmap=plt.cm.gray)
                 if not cur_iter%(15*5):
-                    plt.imsave('exp_%d_res_%d.png'%(self.exp_no,cur_iter),im,cmap=plt.cm.gray)
+                    plt.imsave('res/exp_%d_res_%d.png'%(self.exp_no,cur_iter),im,cmap=plt.cm.gray)
                 plt.title('iter %d'%cur_iter)
             cur_iter+=1
             plt.show(block=False)
@@ -879,16 +885,19 @@ class Texture():
         bounds = zip(bounds[0].flatten(),bounds[1].flatten())
         min_fun = lambda x: cost_fun([np.expand_dims(reshape_im(x),0)])[0].astype(np.float64)
         grad_fun = lambda x: np.squeeze(grads_fun([np.expand_dims(reshape_im(x),0)])[0]).flatten().astype(np.float64)
-        res = minimize(min_fun,im_iter.flatten().astype(np.float64),
+        try:
+            res = minimize(min_fun,im_iter.flatten().astype(np.float64),
                        jac=grad_fun,method=method,bounds=bounds,callback=callback,
                        options={'disp': True, 'maxiter':maxiter,
                                 'maxcor': m, 'ftol': 0, 'gtol': 0})
+        except:
+            pass
 
-        pp[0,0].imshow(im_iter)
-        pp[0,1].imshow(res[::-1])
-        plt.show(block=False)
-        plt.pause(0.01)
-        raw_input('done')
+        #pp[0,0].imshow(im_iter)
+        #pp[0,1].imshow(res[::-1])
+        #plt.show(block=False)
+        #plt.pause(0.01)
+        #raw_input('done')
         #"""
         """
     for i in range(iters):
@@ -971,8 +980,13 @@ if __name__ == "__main__":
     exp_no = 0 # ii = 2
     exps = []
     # alpha 1 keeps ii's data
-    exps.append({'ii':3,'order':50,'alphas':np.ones(16)*0.0,'load': {'mean':True,'std':True,'s':True} })
-    exps.append({'ii':3,'order':50,'alphas':np.ones(16)*1.0,'load': {'mean':True,'std':True,'s':True} })
+    exps.append({'ii':3,'order':150,'alphas':np.ones(16)*1.0,'load': {'mean':False,'std':False,'s':False} })
+    exps.append({'ii':3,'order':150,'alphas':np.ones(16)*0.0,'load': {'mean':True,'std':True,'s':True} })
+    exps.append({'ii':5,'order':10,'alphas':np.ones(16)*1.0,'load': {'mean':False,'std':False,'s':False} })
+    exps.append({'ii':5,'order':10,'alphas':np.ones(16)*0.0,'load': {'mean':True,'std':True,'s':True} })
+    exps.append({'ii':10,'order':30,'alphas':np.ones(16)*1.0,'load': {'mean':False,'std':False,'s':False} })
+    exps.append({'ii':10,'order':30,'alphas':np.ones(16)*0.0,'load': {'mean':True,'std':True,'s':True} })
+
     for exp_no,exp in enumerate(exps):
         #exp = exps[exp_no]
 
@@ -989,7 +1003,7 @@ if __name__ == "__main__":
         syndata.save_new_G(exp['ii'],exp['order'],exp['alphas'],exp['load'],exp_no=exp_no)
 
         # synthesize
-        texture = Texture()
+        texture = Texture(exp_no=exp_no)
 
         # syn fbm
         #use_fbm=True
