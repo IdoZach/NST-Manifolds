@@ -95,7 +95,7 @@ class SynData():
         _, F0 = texture.synTexture(im,onlyGram = True)
         return F0
 
-    def save_svds(self,F,lengths=[2,2,4,4,4],k=20):
+    def get_svds(self,F,lengths=[2,2,4,4,4],k=20):
         UU=[]
         ss=[]
         VV=[]
@@ -114,12 +114,12 @@ class SynData():
                 U,s,V = svds(cur,k=k) # sprase svd with 20 largest singular values
                 if np.any(s==0): # for some reason if there are absolute zeros they come up after the highest sing val.
                     zero_locations= np.where(s==0)[0]
-                    print 'U before',U.shape, V.shape
+                    #print 'U before',U.shape, V.shape
                     nz_locations = range(len(s))[:int(zero_locations[0])]
                     s = np.concatenate([s[zero_locations],s[nz_locations]])
                     U = np.concatenate([U[:,zero_locations],U[:,nz_locations]],axis=1)
                     V = np.concatenate([V[zero_locations,:],V[nz_locations,:]],axis=0)
-                    print 'U after',U.shape, V.shape
+                    #print 'U after',U.shape, V.shape
 
                 # in svds s are *increasing*
                 #U,s,V = ssvd(f)
@@ -134,9 +134,9 @@ class SynData():
             VV.append(lV)
             ss.append(ls)
             SS.append(lS)
-        print 'saving...',
+        #print 'saving...',
         #pickle.dump([UU,ss,VV,SS],open('svd_res_%d.bin'%ii,'w'))
-        print 'done'
+        print 'done svd'
         return UU,ss,VV,SS
         # each UU,ss,VV,SS contains a list, each list is the response between max pools, and within
         # we find another list of the inner convolution layers.
@@ -165,8 +165,10 @@ class SynData():
                     if do_save:
                         desc['s'].append(new_s)
                     else:
+                        #print 'cur s',new_s
                         if load_singular and cur_lev in load_levels:
                             new_s=desc['s'][0]
+                        #print 'new s',new_s
                         del desc['s'][0]
                     new_s = np.exp(new_s)
                 else:
@@ -238,8 +240,8 @@ class SynData():
         ### then we run with 'False' to save the encoded information and G matrices
         ### this can be used in mu_analysis.py to analyse and in vgg_19_keras.py to generate
         print 'creating syn object'
-        self.step_save = False#True
-        self.use_ae = False
+        self.step_save = step_save
+        self.use_ae = use_ae
         self.original_dim = 224**2
         self.n=200
         self.weights = np.array([16,16,4,4,2,2,2,2,1,1,1,1,1,1,1,1],dtype=np.float32) # scaling of means according to inverse matrix size
@@ -253,7 +255,7 @@ class SynData():
         texture = Texture()
         def get_desc(im):
             F0 = get_G_kth(texture,im)
-            UsVS = save_svds(F0)
+            UsVS = self.get_svds(F0)
             _, desc = processF(UsVS,save_i=0,load_std=False)
             return desc
 
@@ -281,7 +283,7 @@ class SynData():
         y_train0, y_test0 = pickle.load(open('m_y.bin','r'))
 
         choose_classes = ['woola','woolb','woolc','woold']
-        choose_classes = []
+        #choose_classes = []
         use_all = len(choose_classes)==0
         print 'use all classes',use_all
         m_train2 = []
@@ -332,7 +334,7 @@ class SynData():
         self.sel_indexes = sel_indexes
         return train_vars, train_vars_std
 
-    def save_new_G(self):
+    def save_new_G(self,ii=None,order=None,alphas=None,load=None,exp_no=0):
         print 'saving new G for synthesis'
         x_train0, x_test0, y_train0, y_test0 = self.prepare_data(self.sel_indexes)
 
@@ -377,8 +379,6 @@ class SynData():
             #inverted = np.array([all[i_source]]) # override
             return inverted, i_source2, [PCA_.explained_variance_ratio_, PCA_.explained_variance_]
 
-        ii=2
-        alpha=0.7
 
         if self.use_ae:
             print 'predicting all training set'
@@ -404,21 +404,66 @@ class SynData():
         print 'loading from file',load_file
         train_vars_compressed, train_vars_std_compressed = pickle.load(open(load_file,'r'))
 
+        def interpolate_latent_pca(vars,i_cur,i_source0,alpha=0.5,closest_point_ord=3):
+            inverted=[]
+            i_source=None
+            for cur in vars:
+                #PCA_ = PCA(n_components=20)
+                PCA_ = PCA()
+                pca = PCA_.fit(cur)
+
+                c_from = PCA_.transform(cur[i_cur])
+                if i_source is None: # set only once
+                    c_all = PCA_.transform(cur)
+                    i_source = np.argsort(np.sum(np.square(c_all - c_from),axis=1))[closest_point_ord]
+                c_to = PCA_.transform(cur[i_source])
+                #print 'alpha', alpha
+                c_from[0] = (1-alpha)*c_to[0]+alpha*c_from[0]
+                inv1 = PCA_.inverse_transform(c_from)
+                inv2 = cur[i_cur]
+                #print 'inv1', inv1
+                #print 'inv2', inv2
+
+                inverted.append(inv1)
+                #print 'debug'
+                #inverted.append(inv2)
+            return inverted, i_source#, [PCA_.explained_variance_ratio_, PCA_.explained_variance_]
+
+        if ii is None:
+            ii=2
+        alpha=0.0
+        if order is None:
+            order = 3
+
         i2 = 10
         i_source = i2
-        alphas = np.ones(16)*0.0
-        alphas[8:]=1.0
+        if alphas is None:
+            alphas = np.ones(16)*alpha
+        #alphas[8:]=1.0
+        if load is None:
+            load = {'mean':True, 'std': True, 's': True}
         #alphas[:]=0.0
-        desc_mean_out_modified = [ np.array([t[ii]]) for t in train_vars_compressed ]
-        desc_mean_out_modified2 = [ np.array([t[i2]]) for t in train_vars_compressed ]
-        desc_mean_out_modified = [ a*g+(1-a)*h for a,g,h in
-                                      zip(alphas,desc_mean_out_modified,desc_mean_out_modified2)]
+        print 'PARAMS: ii %d order %d alphas'%(ii,order),alphas,'load',load
+        #desc_mean_out_modified = [ np.array([t[ii]]) for t in train_vars_compressed ]
+        #desc_mean_out_modified2 = [ np.array([t[i2]]) for t in train_vars_compressed ]
+        #desc_mean_out_modified = [ a*g+(1-a)*h for a,g,h in
+        #                              zip(alphas,desc_mean_out_modified,desc_mean_out_modified2)]
 
         desc_std_out = [ np.array([t[ii]]) for t in train_vars_std_compressed ]
+
+
+        desc_mean_out_modified, i2_chosen = interpolate_latent_pca(train_vars_compressed,ii,i2,alpha,order)
+        i2 = i2_chosen
+        #i2 = ii # control
         desc_std_out2 = [ np.array([t[i2]]) for t in train_vars_std_compressed ]
         desc_std_out_modified = [ a*g+(1-a)*h for a,g,h in
                                       zip(alphas,desc_std_out,desc_std_out2)]
         desc_mean_out = [1.0*t/w for t,w in zip(desc_mean_out_modified,self.weights)]
+
+        # s from svd
+        texture=Texture()
+        UsVS = self.get_svds(self.get_G_kth(texture,x_train0[i2]))
+
         print 'using modified latent variables'
 
         # postprocess
@@ -428,12 +473,13 @@ class SynData():
                 mean[mean<0]=0.0
                 out.append(mean)
             return out
-        desc_mean_out = postprocess(desc_mean_out)
+        #desc_mean_out = postprocess(desc_mean_out)
         new_desc = self.m_train[ii].copy() # point 1 for interpolation
-
+        #print [ [np.mean(xx), np.std(xx)] for xx in new_desc['mean'] ]
         desc_comparison = {'old':new_desc.copy()}
         new_desc['mean'] = desc_mean_out
         new_desc['std'] = desc_std_out_modified
+        new_desc['s'] = [np.log(y) for x in UsVS[1] for y in x] # s
         # interpolate also stds
         mul = lambda x,y,a: [a*g+(1-a)*h for g,h in zip(x,y)]
         #new_desc['std'] = mul(new_desc['std'],source_desc['std'],alpha)
@@ -443,7 +489,7 @@ class SynData():
         desc_comparison['new'] = new_desc
 
         plt.hold(False)
-        i=1
+        i=0
         if self.use_ae:
             plt.hold(False)
             plt.plot(explained_variance[1])
@@ -458,16 +504,15 @@ class SynData():
         pickle.dump(desc_comparison,open('desc_comp.bin','w'))
         pickle.dump(new_desc,open('desc_%d.bin'%ii,'w'))
 
-        texture=Texture()
         if self.use_ae:
             pickle.dump([all_pred, all_enc, y_train0],open('all_pred.bin','w'))
         print 'saving images...'
-        plt.imsave('cur_im_src.png',x_train0[i_source]/255.0,cmap=plt.cm.gray)
-        plt.imsave('cur_im.png',x_train0[ii]/255.0,cmap=plt.cm.gray)
+        plt.imsave('exp_%d_im_src_%d.png'%(exp_no,i2),x_train0[i2]/255.0,cmap=plt.cm.gray)
+        plt.imsave('cur_%d_im_%d.png'%(exp_no,ii),x_train0[ii]/255.0,cmap=plt.cm.gray)
 
         F0 = self.get_G_kth(texture,x_train0[ii])
-        UsVS = self.save_svds(F0)
-        self.new_G, self.desc_out = self.processF(UsVS,load_i=ii,load_std=False)
+        UsVS = self.get_svds(F0)
+        self.new_G, self.desc_out = self.processF(UsVS,load_i=ii,load_mean=load['mean'],load_std=load['std'], load_singular=load['s'])
             # this uses desc file and saves new_G to be used by vgg_19_keras.py file
 
     def getParams(self):
@@ -673,10 +718,11 @@ def VGG_19(weights_path=None,onlyconv=False):
 
 cur_iter=1
 class Texture():
-    def __init__(self, use_caffe=True):
+    def __init__(self, use_caffe=True, exp_no=0):
         self.model = VGG_19_1('vgg19_weights_tf_dim_ordering_tf_kernels.h5',onlyconv=True,caffe=use_caffe)
         self.use_caffe = use_caffe
-    def synTexture(self, im=None, G0_from=None,onlyGram=False):
+        self.exp_no = exp_no
+    def synTexture(self, im=None, G0_from=None,onlyGram=False,maxiter=500):
         model = self.model
         use_caffe = self.use_caffe
         conv_layers = [0,1,3,4,6,7,8,9,11,12,13,14,16,17,18,19]
@@ -807,7 +853,7 @@ class Texture():
 
         # bfgs?
         imsize = [224,224,3]
-        maxiter = 2000
+        #maxiter = 2000
         method = 'L-BFGS-B'
         #method = 'BFGS'
         global cur_iter
@@ -821,6 +867,8 @@ class Texture():
                 im = np.sum(im,axis=2)/3.0 # turn to grayscale
                 plt.imshow(im,cmap=plt.cm.gray)
                 plt.imsave('syn_res.png',im,cmap=plt.cm.gray)
+                if not cur_iter%(15*5):
+                    plt.imsave('exp_%d_res_%d.png'%(self.exp_no,cur_iter),im,cmap=plt.cm.gray)
                 plt.title('iter %d'%cur_iter)
             cur_iter+=1
             plt.show(block=False)
@@ -920,27 +968,36 @@ if __name__ == "__main__":
     # generate F,G from a set of images
     #get_G_kth()
     #print 'saved F,G'
-    syndata = SynData()
+    exp_no = 0 # ii = 2
+    exps = []
+    # alpha 1 keeps ii's data
+    exps.append({'ii':3,'order':50,'alphas':np.ones(16)*0.0,'load': {'mean':True,'std':True,'s':True} })
+    exps.append({'ii':3,'order':50,'alphas':np.ones(16)*1.0,'load': {'mean':True,'std':True,'s':True} })
+    for exp_no,exp in enumerate(exps):
+        #exp = exps[exp_no]
 
-    # step 1 - load data
-    syndata.load_step()
 
-    # step 2 - analyse and save new
-    #MuAnalysis()
+        syndata = SynData()
 
-    # steps 3+ - save new G and synthesize
-    syndata.save_new_G()
+        # step 1 - load data
+        syndata.load_step()
 
-    # synthesize
-    texture = Texture()
+        # step 2 - analyse and save new
+        #MuAnalysis()
 
-    # syn fbm
-    #use_fbm=True
-    #im = getIm(use_fbm)
-    #texture.synTexture(im=im,G0_from='new_G.bin',onlyGram = False)
+        # steps 3+ - save new G and synthesize
+        syndata.save_new_G(exp['ii'],exp['order'],exp['alphas'],exp['load'],exp_no=exp_no)
 
-    # syn from modified G
-    texture.synTexture(im=None,G0_from='new_G.bin',onlyGram = False)
+        # synthesize
+        texture = Texture()
+
+        # syn fbm
+        #use_fbm=True
+        #im = getIm(use_fbm)
+        #texture.synTexture(im=im,G0_from='new_G.bin',onlyGram = False)
+
+        # syn from modified G
+        texture.synTexture(im=None,G0_from='new_G.bin',onlyGram = False,maxiter=300)
 
     """
     original_dim = 224**2

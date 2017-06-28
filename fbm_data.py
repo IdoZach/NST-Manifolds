@@ -12,13 +12,17 @@ from scipy.stats import kurtosis
 from coherence import coherence
 import tensorflow as tf
 import keras.backend as K
+import gc
 
 def generate_1d_fbms(N=10000,n=256,reCalc=False):
     #reCalc = True
     #reCalc = False
     if os.path.exists('data1d.bin') and not reCalc:
         print 'loading data from file'
-        Xtrain, Xtest, Ytrain, Ytest = pickle.load(open('data1d.bin','r'))
+        print 'disabling gc'
+        gc.disable()
+        Xtrain, Xtest, Ytrain, Ytest = pickle.load(open('data1d.bin','rb'),pickle.HIGHEST_PROTOCOL)
+        gc.enable()
     else:
         print 'generating data and saving'
         np.random.seed(0)
