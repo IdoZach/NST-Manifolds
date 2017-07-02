@@ -3,7 +3,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn import linear_model
-
+import matplotlib.ticker as ticker
 from sklearn.decomposition import PCA
 
 
@@ -27,104 +27,123 @@ def standardize(x):
     return x
 features['H'] =       standardize([ np.float32(u) for  u in y[:,0] ]) # H
 features['Kurt'] =    standardize([ np.log(1+np.float32(u)) for  u in y[:,1] ]) # log kurt
-features['StdCoh'] =  standardize([ np.log(1+np.float32(u)) for  u in y[:,3] ]) # std log coh
+#features['StdCoh'] =  standardize([ np.log(1+np.float32(u)) for  u in y[:,3] ]) # std log coh
 features['MeanCoh'] = standardize([ np.log(1+np.float32(u)) for  u in y[:,4] ]) # mean log coh
+props = features.keys()
+prop = 'H'
 
-chosen = features['H']
+for prop in props:
+    print 'USING PROPERTY',prop
+    chosen = features[prop]
+    color = [plt.cm.jet(c) for c in chosen]
+    map = {}; k=1
+    classes = ['wool','cotton','cracker']
+    subclasses = ['a','b','c','d']
+    markers0 = ['+','x','.','^']
+    colors = ['r','g','b','c','m','y','k']
+    colors1 = ['r','k','m','b']
+    markers = ['o' for i in range(len(color))]
+    markers={}
+    for ii,i in enumerate(classes):
+        kk=0
+        for jj,j in enumerate(subclasses):
+            map[i+j]=k
+            #markers[i+j]=markers0[jj] # for markers of subclass
+            markers[i+j]=markers0[ii] # for markers of class
+        k+=1
+    #color = [colors[map[c]] for c in y[:,2]] # color by class
+    def get_linreg(x,y):
+        clf = linear_model.LinearRegression()
+        clf.fit(x,y)
+        return clf
 
-color = [plt.cm.jet(c) for c in chosen]
-map = {}; k=1
-classes = ['wool','cotton','cracker']
-subclasses = ['a','b','c','d']
-markers0 = ['+','x','.','^']
-colors = ['r','g','b','c','m','y','k']
-markers = ['o' for i in range(len(color))]
-markers={}
-for ii,i in enumerate(classes):
-    kk=0
-    for jj,j in enumerate(subclasses):
-        map[i+j]=k
-        #markers[i+j]=markers0[jj] # for markers of subclass
-        markers[i+j]=markers0[ii] # for markers of class
-    k+=1
-#color = [colors[map[c]] for c in y[:,2]] # color by class
-def get_linreg(x,y):
-    clf = linear_model.LinearRegression()
-    clf.fit(x,y)
-    return clf
-
-marker = [markers[c] for c in y[:,2]]
-use_ae = False
-if use_ae:
-    PCA_ = PCA(n_components=5)
-    pca = PCA_.fit(all_enc)
-    transformed = PCA_.transform(all_enc)
-
-    x1=transformed[:,0]
-    x2=transformed[:,1]
-    x3=transformed[:,2]
-    X = np.array([ [a1,a2] for a1,a2 in zip(x1,x2) ])
-    Y = x3
-    plt.clf()
-    ax = fig.add_subplot(111, projection='3d')
-    plt.hold(True)
-    #color = [1.0/max(color) for c in color]
-    for xx1,xx2,xx3,c,m in zip(x1,x2,x3,color,marker):
-        ax.scatter(xx1,xx2,zs=xx3,s=30,c=c,marker=m)
-    #plt.scatter(x1,x2,zs=x3,s=20,c=color)
-
-else:
-    train_vars_compressed = []
-    for k, cur in enumerate(train_vars):
-    #for k, cur in enumerate(train_vars_std):
-        #if k!=1:
-        #    continue
-    #cur = train_vars[5]
-        PCA_ = PCA(n_components=10)
-        print len(cur)
-        pca = PCA_.fit(cur)
-        try:
-            low_ind = np.where(PCA_.explained_variance_ratio_<0.01)[0][0]
-        except:
-            low_ind = -1
-        print 'scale',k,'low ind',low_ind
-        transformed = PCA_.transform(cur)
-        if low_ind>-1:
-            transformed[:,low_ind:]=0
-        inverse = PCA_.inverse_transform(transformed)
-        train_vars_compressed.append(inverse)
+    marker = [markers[c] for c in y[:,2]]
+    use_ae = False
+    if use_ae:
+        PCA_ = PCA(n_components=5)
+        pca = PCA_.fit(all_enc)
+        transformed = PCA_.transform(all_enc)
 
         x1=transformed[:,0]
         x2=transformed[:,1]
         x3=transformed[:,2]
-        # linreg for color (i.e. feature w.r.t x vector
-        coors = {}
-        for kk,feat in features.iteritems():
-            res = get_linreg(np.stack([x1,x2,x3]).T,feat)
-            print 'R^2', res.score(np.stack([x1,x2,x3]).T,feat)
-            coors[kk] = res.coef_/np.linalg.norm(res.coef_)*np.max(np.stack([x1,x2,x3]))/2
+        X = np.array([ [a1,a2] for a1,a2 in zip(x1,x2) ])
+        Y = x3
         plt.clf()
-        plt.plot(PCA_.explained_variance_ratio_)
-        plt.pause(0.1)
-        plt.clf()
-        fig = plt.figure(0)
-        plt.hold(True)
         ax = fig.add_subplot(111, projection='3d')
-        #plt.hold(True)
+        plt.hold(True)
+        #color = [1.0/max(color) for c in color]
         for xx1,xx2,xx3,c,m in zip(x1,x2,x3,color,marker):
-            #pass
-            ax.scatter(xx1,xx2,zs=xx3,s=30,c=c,marker=m,facecolor=c)
-        #
-        coorsmat = np.array(coors.values())
-        print 'coors rank', np.linalg.matrix_rank(coorsmat)
-        linestyles=['-','--',':','-.']
-        for (val, kk), ls in zip(coors.iteritems(), linestyles):
-            plt.plot([0, kk[0]],[0, kk[1]],[0, kk[2]],ls=ls,lw=3)
-        plt.xlabel('x')
-        plt.ylabel('y')
-        plt.title(str(k))
-        plt.pause(0.1)
-        plt.show()
+            ax.scatter(xx1,xx2,zs=xx3,s=30,c=c,marker=m)
+        #plt.scatter(x1,x2,zs=x3,s=20,c=color)
+
+    else:
+        train_vars_compressed = []
+        for k, cur in enumerate(train_vars):
+        #for k, cur in enumerate(train_vars_std):
+            #if k!=1:
+            #    continue
+        #cur = train_vars[5]
+            PCA_ = PCA(n_components=10)
+            print len(cur)
+            pca = PCA_.fit(cur)
+            try:
+                low_ind = np.where(PCA_.explained_variance_ratio_<0.01)[0][0]
+            except:
+                low_ind = -1
+            print 'scale',k,'low ind',low_ind
+            transformed = PCA_.transform(cur)
+            if low_ind>-1:
+                transformed[:,low_ind:]=0
+            inverse = PCA_.inverse_transform(transformed)
+            train_vars_compressed.append(inverse)
+
+            x1=transformed[:,0]
+            x2=transformed[:,1]
+            x3=transformed[:,2]
+            # linreg for color (i.e. feature w.r.t x vector
+            coors = {}
+            for kk,feat in features.iteritems():
+                res = get_linreg(np.stack([x1,x2,x3]).T,feat)
+                print 'R^2', res.score(np.stack([x1,x2,x3]).T,feat)
+                coors[kk] = res.coef_/np.linalg.norm(res.coef_)*np.max(np.stack([x1,x2,x3]))/1.6
+            plt.clf()
+            plt.plot(PCA_.explained_variance_ratio_,lw=5)
+            plt.xlabel('PCA component',fontsize=20)
+            plt.ylabel('Ratio',fontsize=20)
+            plt.tick_params(labelsize=16)
+            plt.tight_layout()
+            plt.savefig('stats/pca_sc_%d_expvar_rat.pdf'%(k))
+            plt.pause(0.1)
+            plt.clf()
+            fig = plt.figure(0)
+            plt.hold(True)
+            ax = fig.add_subplot(111, projection='3d')
+            #plt.hold(True)
+            for xx1,xx2,xx3,c,m in zip(x1,x2,x3,color,marker):
+                ax.scatter(xx1,xx2,zs=xx3,s=90,c=c,marker=m,facecolor=c)
+            #
+            coorsmat = np.array(coors.values())
+            print 'coors rank', np.linalg.matrix_rank(coorsmat)
+            linestyles=['-','--',':','-.']
+            if prop=='H':
+                for (val, kk), ls, propa, c  in zip(coors.iteritems(), linestyles, props,colors1):
+                    plt.plot([0, kk[0]],[0, kk[1]],[0, kk[2]],ls=ls,lw=8,c=c,label=propa)
+            plt.xlabel('PC1')
+            plt.ylabel('PC2')
+            ax.xaxis.set_major_formatter(ticker.FormatStrFormatter('%1.0e'))
+            ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%1.0e'))
+            ax.zaxis.set_major_formatter(ticker.FormatStrFormatter('%1.0e'))
+            ax.set_zlabel('PC3')
+            if prop=='H': # disp just on the first image
+                plt.legend(fontsize=20)
+            #else:
+            #    plt.legend().set_visible(False)
+            #plt.title(str(k))
+            plt.tight_layout()
+            plt.savefig('stats/pca_sc_%d_prop_%s.pdf'%(k,prop))
+            #plt.pause(0.1)
+            #plt.show()
 
 ##
 pickle.dump([train_vars_compressed, train_vars_std],open('train_vars_comp.bin','w'))

@@ -11,6 +11,8 @@ from numpy.linalg import norm
 from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 from os.path import exists
+from os import remove
+from glob import glob
 from fbm_data import synth2, get_kth_imgs
 import cPickle as pickle
 import cv2, numpy as np
@@ -51,7 +53,7 @@ class mu_AE():
         for input,inter in zip(self.inputs,self.enc_inter):
             _tomerge.append(inter(input))
         encoded = merge(_tomerge,mode='concat',concat_axis=1)
-        print encoded
+        #print encoded
         for l in self.enc_join_layers:
             encoded = l(encoded)
 
@@ -108,7 +110,7 @@ class SynData():
             lS=[]
             for l in range(ll):
                 cur = f[chunk*l:chunk*(l+1),:]
-                print 'calc svd inner %d'%l,
+                #print 'calc svd inner %d'%l,
                 #U,s,V = svd(f)
                 #print f.shape
                 U,s,V = svds(cur,k=k) # sprase svd with 20 largest singular values
@@ -123,7 +125,7 @@ class SynData():
 
                 # in svds s are *increasing*
                 #U,s,V = ssvd(f)
-                print 'done'
+                #print 'done'
                 lU.append(U)
                 lV.append(V)
                 ls.append(s)
@@ -207,9 +209,9 @@ class SynData():
                 plt.semilogy(new_s,'--')
 
             F_lev = np.concatenate(f_lev,axis=0)
-            print F_lev.shape
+            #print F_lev.shape
             G_lev = np.dot(F_lev.T,F_lev)
-            print G_lev.shape
+            #print G_lev.shape
             new_G.append(G_lev)
 
         if do_save:
@@ -412,11 +414,11 @@ class SynData():
                 PCA_ = PCA()
                 pca = PCA_.fit(cur)
 
-                c_from = PCA_.transform(cur[i_cur])
+                c_from = PCA_.transform(cur[i_cur].reshape(1,-1))
                 if i_source is None: # set only once
                     c_all = PCA_.transform(cur)
                     i_source = np.argsort(np.sum(np.square(c_all - c_from),axis=1))[closest_point_ord]
-                c_to = PCA_.transform(cur[i_source])
+                c_to = PCA_.transform(cur[i_source].reshape(1,-1))
                 #print 'alpha', alpha
                 c_from[0] = (1-alpha)*c_to[0]+alpha*c_from[0]
                 inv1 = PCA_.inverse_transform(c_from)
@@ -644,7 +646,7 @@ def VGG_19_1(weights_path=None,onlyconv=False,caffe=False):
 
         for layer in model.layers:
             if layer.name in weights_data.keys():
-                print 'loading layer',layer.name
+                #print 'loading layer',layer.name
                 layer_weights = weights_data[layer.name]
 
                 layer.set_weights((layer_weights['weights'],
@@ -657,7 +659,7 @@ def VGG_19_1(weights_path=None,onlyconv=False,caffe=False):
 
     if onlyconv:
         for i in range(5): # get rid of fc layers
-            print 'popping', model.layers[-1]
+            #print 'popping', model.layers[-1]
             model.pop()
     return model
 
@@ -873,7 +875,7 @@ class Texture():
                 im = np.sum(im,axis=2)/3.0 # turn to grayscale
                 plt.imshow(im,cmap=plt.cm.gray)
                 plt.imsave('res/syn_res.png',im,cmap=plt.cm.gray)
-                if not cur_iter%(15*5):
+                if cur_iter==225:
                     plt.imsave('res/exp_%d_res_%d.png'%(self.exp_no,cur_iter),im,cmap=plt.cm.gray)
                 plt.title('iter %d'%cur_iter)
             cur_iter+=1
@@ -888,7 +890,7 @@ class Texture():
         try:
             res = minimize(min_fun,im_iter.flatten().astype(np.float64),
                        jac=grad_fun,method=method,bounds=bounds,callback=callback,
-                       options={'disp': True, 'maxiter':maxiter,
+                       options={'disp': False, 'maxiter':maxiter,
                                 'maxcor': m, 'ftol': 0, 'gtol': 0})
         except:
             pass
@@ -980,6 +982,8 @@ if __name__ == "__main__":
     exp_no = 0 # ii = 2
     exps = []
     # alpha 1 keeps ii's data
+
+    # first experiment in paper
     exps.append({'ii':3,'order':150,'alphas':np.ones(16)*1.0,'load': {'mean':False,'std':False,'s':False} })
     exps.append({'ii':3,'order':150,'alphas':np.ones(16)*0.0,'load': {'mean':True,'std':True,'s':True} })
     exps.append({'ii':5,'order':10,'alphas':np.ones(16)*1.0,'load': {'mean':False,'std':False,'s':False} })
@@ -987,9 +991,38 @@ if __name__ == "__main__":
     exps.append({'ii':10,'order':30,'alphas':np.ones(16)*1.0,'load': {'mean':False,'std':False,'s':False} })
     exps.append({'ii':10,'order':30,'alphas':np.ones(16)*0.0,'load': {'mean':True,'std':True,'s':True} })
 
+    exps.append({'ii':8,'order':50,'alphas':np.ones(16)*0.8,'load': {'mean':True,'std':True,'s':True} })
+    exps.append({'ii':10,'order':50,'alphas':np.ones(16)*0.8,'load': {'mean':True,'std':True,'s':True} })
+    exps.append({'ii':15,'order':50,'alphas':np.ones(16)*0.8,'load': {'mean':True,'std':True,'s':True} })
+
+    exps.append({'ii':20,'order':50,'alphas':np.ones(16)*0.8,'load': {'mean':True,'std':True,'s':True} })
+    exps.append({'ii':30,'order':40,'alphas':np.ones(16)*0.8,'load': {'mean':True,'std':True,'s':True} })
+    alphas = np.ones(16)
+    alphas[6:] = 1.0
+    exps.append({'ii':40,'order':10,'alphas':alphas,'load': {'mean':True,'std':True,'s':True} })
+    exps.append({'ii':50,'order':10,'alphas':alphas,'load': {'mean':True,'std':True,'s':True} })
+
+    exps.append({'ii':60,'order':30,'alphas':alphas,'load': {'mean':True,'std':True,'s':True} })
+    exps.append({'ii':61,'order':30,'alphas':alphas,'load': {'mean':True,'std':True,'s':True} })
+    exps.append({'ii':62,'order':30,'alphas':alphas,'load': {'mean':True,'std':True,'s':True} })
+    exps.append({'ii':63,'order':30,'alphas':alphas,'load': {'mean':True,'std':True,'s':True} })
+
+    #exps.append({'ii':8,'order':20,'alphas':np.ones(16)*0.8,'load': {'mean':False,'std':False,'s':False} })
+
+    do_exps = [13,14,15,16]
+
+    def remove_exp_files(num):
+        for f in glob('res/exp_%d*'%num):
+            remove(f)
+
     for exp_no,exp in enumerate(exps):
         #exp = exps[exp_no]
 
+        if exp_no not in do_exps:
+            continue
+        print '######## CUR EXP',exp_no, '#########'
+        # remove previously saved files.
+        remove_exp_files(exp_no)
 
         syndata = SynData()
 
@@ -1011,7 +1044,7 @@ if __name__ == "__main__":
         #texture.synTexture(im=im,G0_from='new_G.bin',onlyGram = False)
 
         # syn from modified G
-        texture.synTexture(im=None,G0_from='new_G.bin',onlyGram = False,maxiter=300)
+        texture.synTexture(im=None,G0_from='new_G.bin',onlyGram = False,maxiter=230)
 
     """
     original_dim = 224**2
