@@ -14,6 +14,9 @@ from os.path import exists
 from os import remove
 from glob import glob
 from fbm_data import synth2, get_kth_imgs
+from fbm2d import hurst2d
+from scipy.stats import kurtosis
+from coherence import coherence
 import cPickle as pickle
 import cv2, numpy as np
 from sklearn.decomposition import PCA
@@ -461,6 +464,9 @@ class SynData():
 
 
         desc_mean_out_modified, i2_chosen = interpolate_latent_pca(train_vars_compressed,ii,i2,alpha,order)
+
+        # TODO why not interpolate in PCA space also the STD???
+
         i2 = i2_chosen
         #i2 = ii # control
         desc_std_out2 = [ np.array([t[i2]]) for t in train_vars_std_compressed ]
@@ -487,7 +493,10 @@ class SynData():
         desc_comparison = {'old':new_desc.copy()}
         new_desc['mean'] = desc_mean_out
         new_desc['std'] = desc_std_out_modified
-        new_desc['s'] = [np.log(y) for x in UsVS[1] for y in x] # s
+
+        # TODO why not interpolate singular values also?
+
+        new_desc['s'] = [np.log(y) for x in UsVS[1] for y in x] # UsVS[1] is the s (singular)
         # interpolate also stds
         mul = lambda x,y,a: [a*g+(1-a)*h for g,h in zip(x,y)]
         #new_desc['std'] = mul(new_desc['std'],source_desc['std'],alpha)
@@ -517,11 +526,15 @@ class SynData():
         print 'saving images...'
         plt.imsave('res/exp_%d_im_src_%d.png'%(exp_no,i2),x_train0[i2]/255.0,cmap=plt.cm.gray)
         plt.imsave('res/exp_%d_im_%d.png'%(exp_no,ii),x_train0[ii]/255.0,cmap=plt.cm.gray)
+        stats_src = get_stats(x_train0[i2]/255.0)
+        stats_tar = get_stats(x_train0[ii]/255.0)
 
         F0 = self.get_G_kth(texture,x_train0[ii])
         UsVS = self.get_svds(F0)
         self.new_G, self.desc_out = self.processF(UsVS,load_i=ii,load_mean=load['mean'],load_std=load['std'], load_singular=load['s'])
             # this uses desc file and saves new_G to be used by vgg_19_keras.py file
+
+        return stats_src, stats_tar
 
     def getParams(self):
         return self.new_G, self.desc_out
@@ -726,10 +739,11 @@ def VGG_19(weights_path=None,onlyconv=False):
 
 cur_iter=1
 class Texture():
-    def __init__(self, use_caffe=True, exp_no=0):
+    def __init__(self, use_caffe=True, exp_no=0, stats=None):
         self.model = VGG_19_1('vgg19_weights_tf_dim_ordering_tf_kernels.h5',onlyconv=True,caffe=use_caffe)
         self.use_caffe = use_caffe
         self.exp_no = exp_no
+        self.stats = stats
     def synTexture(self, im=None, G0_from=None,onlyGram=False,maxiter=500):
         model = self.model
         use_caffe = self.use_caffe
@@ -866,9 +880,11 @@ class Texture():
         #method = 'BFGS'
         global cur_iter
         cur_iter=0
+        global stats_im
+        stats_im = []
         def callback(x):
             global cur_iter
-
+            global stats_im
             #print 'random number',np.random.rand(1)
             if not cur_iter%15:
                 im = np.reshape(x,imsize)[:,:,::-1]
@@ -877,6 +893,17 @@ class Texture():
                 plt.imsave('res/syn_res.png',im,cmap=plt.cm.gray)
                 if cur_iter==225:
                     plt.imsave('res/exp_%d_res_%d.png'%(self.exp_no,cur_iter),im,cmap=plt.cm.gray)
+                    # saveing all stats
+                    stats_im = get_stats(im)
+                    stats_src, stats_tar = self.stats
+                    with open('res/exp_%d_stats.txt'%self.exp_no,'w') as f:
+                        f.write('stats src')
+                        f.write(str(stats_src))
+                        f.write('\nstats tar')
+                        f.write(str(stats_tar))
+                        f.write('\nstats syn')
+                        f.write(str(stats_im))
+                    print 'SAVED STATS'
                 plt.title('iter %d'%cur_iter)
             cur_iter+=1
             plt.show(block=False)
@@ -894,7 +921,8 @@ class Texture():
                                 'maxcor': m, 'ftol': 0, 'gtol': 0})
         except:
             pass
-
+        stats_src, stats_tar = self.stats
+        return stats_src, stats_tar, stats_im
         #pp[0,0].imshow(im_iter)
         #pp[0,1].imshow(res[::-1])
         #plt.show(block=False)
@@ -950,6 +978,21 @@ def get_G_kth():
     pickle.dump(gg,open(saved_G,'w'))
     pickle.dump(ff,open(saved_F,'w'))
 
+def get_stats(im):
+    def standardize(x):
+        x=np.array(x)
+        x[np.isnan(x)]=0.0
+        x=x-np.min(x)
+        x=x/np.max(x)
+        return x
+
+    patch = standardize(im)
+    h,_ = hurst2d(patch,max_tau=7)
+    # estimate Gaussianity via kurtosis
+    kurt = kurtosis(patch.flatten())
+    coh = coherence(patch)
+    return dict({'H':h,'Kurtosis':kurt,'MeanCoh':np.mean(coh['logcoh'])})
+
 
 def getIm(fbm=False):
     if not fbm:
@@ -983,7 +1026,7 @@ if __name__ == "__main__":
     exps = []
     # alpha 1 keeps ii's data
 
-    # first experiment in paper
+    # 0..5
     exps.append({'ii':3,'order':150,'alphas':np.ones(16)*1.0,'load': {'mean':False,'std':False,'s':False} })
     exps.append({'ii':3,'order':150,'alphas':np.ones(16)*0.0,'load': {'mean':True,'std':True,'s':True} })
     exps.append({'ii':5,'order':10,'alphas':np.ones(16)*1.0,'load': {'mean':False,'std':False,'s':False} })
@@ -991,10 +1034,12 @@ if __name__ == "__main__":
     exps.append({'ii':10,'order':30,'alphas':np.ones(16)*1.0,'load': {'mean':False,'std':False,'s':False} })
     exps.append({'ii':10,'order':30,'alphas':np.ones(16)*0.0,'load': {'mean':True,'std':True,'s':True} })
 
+    # 6..8
     exps.append({'ii':8,'order':50,'alphas':np.ones(16)*0.8,'load': {'mean':True,'std':True,'s':True} })
     exps.append({'ii':10,'order':50,'alphas':np.ones(16)*0.8,'load': {'mean':True,'std':True,'s':True} })
     exps.append({'ii':15,'order':50,'alphas':np.ones(16)*0.8,'load': {'mean':True,'std':True,'s':True} })
 
+    # 9..12
     exps.append({'ii':20,'order':50,'alphas':np.ones(16)*0.8,'load': {'mean':True,'std':True,'s':True} })
     exps.append({'ii':30,'order':40,'alphas':np.ones(16)*0.8,'load': {'mean':True,'std':True,'s':True} })
     alphas = np.ones(16)
@@ -1002,14 +1047,26 @@ if __name__ == "__main__":
     exps.append({'ii':40,'order':10,'alphas':alphas,'load': {'mean':True,'std':True,'s':True} })
     exps.append({'ii':50,'order':10,'alphas':alphas,'load': {'mean':True,'std':True,'s':True} })
 
+    # 13..16
     exps.append({'ii':60,'order':30,'alphas':alphas,'load': {'mean':True,'std':True,'s':True} })
     exps.append({'ii':61,'order':30,'alphas':alphas,'load': {'mean':True,'std':True,'s':True} })
     exps.append({'ii':62,'order':30,'alphas':alphas,'load': {'mean':True,'std':True,'s':True} })
     exps.append({'ii':63,'order':30,'alphas':alphas,'load': {'mean':True,'std':True,'s':True} })
 
+    # 17..22
+    def getAlpha(x):
+        alphas = np.ones(16)
+        alphas[6:] = x
+        return alphas
+
+    for ee in [0.0,0.2,0.4,0.6,0.8,1.0]:
+        exps.append({'ii':10,'order':3,'alphas':getAlpha(ee),'load': {'mean':True,'std':True,'s':True} })
+
+
     #exps.append({'ii':8,'order':20,'alphas':np.ones(16)*0.8,'load': {'mean':False,'std':False,'s':False} })
 
-    do_exps = [13,14,15,16]
+    do_exps = [13,14,15,16] # in paper
+    do_exps = [17,18,19,20,21,22] # new exp. for paper
 
     def remove_exp_files(num):
         for f in glob('res/exp_%d*'%num):
@@ -1033,10 +1090,10 @@ if __name__ == "__main__":
         #MuAnalysis()
 
         # steps 3+ - save new G and synthesize
-        syndata.save_new_G(exp['ii'],exp['order'],exp['alphas'],exp['load'],exp_no=exp_no)
+        stats_src, stats_tar = syndata.save_new_G(exp['ii'],exp['order'],exp['alphas'],exp['load'],exp_no=exp_no)
 
         # synthesize
-        texture = Texture(exp_no=exp_no)
+        texture = Texture(exp_no=exp_no,stats = [stats_src, stats_tar])
 
         # syn fbm
         #use_fbm=True
@@ -1044,7 +1101,16 @@ if __name__ == "__main__":
         #texture.synTexture(im=im,G0_from='new_G.bin',onlyGram = False)
 
         # syn from modified G
-        texture.synTexture(im=None,G0_from='new_G.bin',onlyGram = False,maxiter=230)
+        plt.close('all')
+        stats_src, stats_tar, stats_im = texture.synTexture(im=None,G0_from='new_G.bin',onlyGram = False,maxiter=230)
+
+        print 'saving experiment stats'
+        exp_stats = {}
+        exp_stats['src'] = stats_src
+        exp_stats['tar'] = stats_tar
+        exp_stats['syn'] = stats_im
+        exp_stats['alphas'] = exp['alphas']
+        pickle.dump(exp_stats,open('res/exp_%d_stats.bin'%exp_no,'w'))
 
     """
     original_dim = 224**2
