@@ -13,10 +13,11 @@ import matplotlib.pyplot as plt
 from os.path import exists
 from os import remove
 from glob import glob
-from fbm_data import synth2, get_kth_imgs
+from fbm_data import synth2, get_kth_imgs, get_other_imgs
 from fbm2d import hurst2d
 from scipy.stats import kurtosis
 from coherence import coherence
+from patch_stats import get_stats
 import cPickle as pickle
 import cv2, numpy as np
 from sklearn.decomposition import PCA
@@ -88,7 +89,7 @@ class mu_AE():
 
 class SynData():
 
-    def get_G_kth(self,texture, im):
+    def get_G(self,texture, im):
         #texture = Texture()
 
         #saved_G = 'KTH_G.bin'
@@ -227,20 +228,29 @@ class SynData():
         return new_G, desc_out
 
     def prepare_data(self,idxs=None):
-        x_train0, x_test0, y_train0, y_test0 = \
-            get_kth_imgs(N=50000,n=self.n,reCalc=False,resize=self.original_dim)
-        x_train0[0],_ = synth2(224,H=0.3)
-        x_train0[1],_ = synth2(224,H=0.5)
-        for i in range(2):
-            x_train0[i]-=np.min(x_train0[i]*1.0)
-            x_train0[i]=x_train0[i]/np.max(x_train0[i])*256.0
-        print 'two first samples are fBm'
-        if idxs is not None:
+        if self.dataset is 'kth':
+            print 'loading from KTH dataset'
+            x_train0, x_test0, y_train0, y_test0 = \
+                get_kth_imgs(N=50000,n=self.n,reCalc=False,resize=self.original_dim)
+            x_train0[0],_ = synth2(224,H=0.3)
+            x_train0[1],_ = synth2(224,H=0.5)
+            for i in range(2):
+                x_train0[i]-=np.min(x_train0[i]*1.0)
+                x_train0[i]=x_train0[i]/np.max(x_train0[i])*256.0
+            print 'two first samples are fBm'
+
+        else:
+            print 'loading from OTHER (SIM) dataset'
+            x_train0, x_test0, y_train0, y_test0 = \
+                get_other_imgs(N=1000,n=self.n,reCalc=False,resize=self.original_dim)
+            #print 'NOT IMPLEMENTED'
+
+        if self.dataset is 'kth' and idxs is not None:
             return x_train0[idxs], x_test0, y_train0[idxs], y_test0
         else:
             return x_train0, x_test0, y_train0, y_test0
 
-    def __init__(self, step_save=False, use_ae=False):
+    def __init__(self, step_save=False, use_ae=False, dataset='kth'):
         ### here we run with 'save_step=True' to save data.
         ### then we run with 'False' to save the encoded information and G matrices
         ### this can be used in mu_analysis.py to analyse and in vgg_19_keras.py to generate
@@ -250,18 +260,20 @@ class SynData():
         self.original_dim = 224**2
         self.n=200
         self.weights = np.array([16,16,4,4,2,2,2,2,1,1,1,1,1,1,1,1],dtype=np.float32) # scaling of means according to inverse matrix size
+        self.dataset=dataset
+
 
     def save_step(self):
         # prepare training data
-        x_train0, x_test0, y_train0, y_test0 = prepare_data()
+        x_train0, x_test0, y_train0, y_test0 = self.prepare_data()
         # process
         m_train = []
         m_test = []
         texture = Texture()
         def get_desc(im):
-            F0 = get_G_kth(texture,im)
+            F0 = self.get_G(texture,im)
             UsVS = self.get_svds(F0)
-            _, desc = processF(UsVS,save_i=0,load_std=False)
+            _, desc = self.processF(UsVS,save_i=0,load_std=False)
             return desc
 
         print 'saving results...'
@@ -270,43 +282,49 @@ class SynData():
             print 'train', i+1, '/', len(x_train0)
             desc=get_desc(im)
             m_train.append(desc)
-            pickle.dump(m_train,open('m_train.bin','w'))
+            pickle.dump(m_train,open('m_train_'+self.dataset+'.bin','w'))
 
         for i, im in enumerate(x_test0):
             print 'test', i+1, '/', len(x_test0)
             desc=get_desc(im)
             m_test.append(desc)
-            pickle.dump(m_test,open('m_test.bin','w'))
+            pickle.dump(m_test,open('m_test_'+self.dataset+'.bin','w'))
 
-        pickle.dump([y_train0,y_test0],open('m_y.bin','w'))
+        pickle.dump([y_train0,y_test0],open('m_y_'+self.dataset+'.bin','w'))
         return m_train, m_test, y_train0, y_test0
 
     def load_step(self):
-        print 'loading data and preprocessing train_vars.bin'
-        m_train = pickle.load(open('m_train.bin','r'))
-        m_test = pickle.load(open('m_test.bin','r'))
+        print 'loading data and preprocessing train_vars_'+self.dataset+'.bin'
+        m_train = pickle.load(open('m_train_'+self.dataset+'.bin','r'))
+        m_test = pickle.load(open('m_test_'+self.dataset+'.bin','r'))
         y_train0, y_test0 = pickle.load(open('m_y.bin','r'))
 
-        choose_classes = ['woola','woolb','woolc','woold']
-        #choose_classes = []
-        use_all = len(choose_classes)==0
-        print 'use all classes',use_all
-        m_train2 = []
-        y_train2 = []
         sel_indexes = []
-        for i,(tr,te) in enumerate(zip(m_train,y_train0)):
-            if te[2] in choose_classes or use_all:
-                m_train2.append(tr)
-                y_train2.append(te)
-                sel_indexes.append(i)
-        pickle.dump(y_train2,open('yy.bin','w'))
-        print 'full len',len(m_train),
-        m_train = m_train2
-        print 'used len',len(m_train)
+        if self.dataset is 'kth':
+            choose_classes = ['woola','woolb','woolc','woold']
+            #choose_classes = []
+
+            use_all = len(choose_classes)==0
+            print 'use all classes',use_all
+            m_train2 = []
+            y_train2 = []
+            sel_indexes = []
+            for i,(tr,te) in enumerate(zip(m_train,y_train0)):
+                if te[2] in choose_classes or use_all:
+                    m_train2.append(tr)
+                    y_train2.append(te)
+                    sel_indexes.append(i)
+            pickle.dump(y_train2,open('yy.bin','w'))
+            print 'full len',len(m_train),
+            m_train = m_train2
+            print 'used len',len(m_train)
+
         train_means = [ m['mean'] for m in m_train ]
         test_means =  [ m['mean'] for m in m_test ]
         train_stds = [ m['std'] for m in m_train ]
         test_stds =  [ m['std'] for m in m_test ]
+        train_s = [ m['s'] for m in m_train ]
+        test_s =  [ m['s'] for m in m_test ]
         self.m_train = m_train
         self.m_test = m_test
 
@@ -314,16 +332,21 @@ class SynData():
         test_vars = []
         train_vars_std = []
         test_vars_std = []
+        train_vars_s = []
+        test_vars_s = []
         for i in range(len(train_means[0])): # 16
             train_vars.append( np.array([x[i] for x in train_means ]))
             test_vars.append( np.array([x[i] for x in test_means ]))
             train_vars_std.append( np.array([x[i] for x in train_stds ]))
             test_vars_std.append( np.array([x[i] for x in test_stds ]))
+            train_vars_s.append( np.array([x[i] for x in train_s ]))
+            test_vars_s.append( np.array([x[i] for x in test_s ]))
+        # apply weights only to means
         train_vars = [t*w for t,w in zip(train_vars,self.weights)]
         test_vars = [t*w for t,w in zip(test_vars,self.weights)]
 
         # try pca for the entire dataset
-        pickle.dump([train_vars, train_vars_std],open('train_vars.bin','w'))
+        pickle.dump([train_vars, train_vars_std, train_vars_s],open('train_vars_'+self.dataset+'.bin','w'))
         if self.use_ae:
             AE = mu_AE(encoding_dim=10) # was 10 for one class
             #print len(train_vars[0])
@@ -337,12 +360,12 @@ class SynData():
                 print 'saving model...'
                 AE.ae.save('ae_model.bin')
         self.sel_indexes = sel_indexes
-        return train_vars, train_vars_std
+        return train_vars, train_vars_std, train_vars_s
 
     def save_new_G(self,ii=None,order=None,alphas=None,load=None,exp_no=0):
         print 'saving new G for synthesis'
         x_train0, x_test0, y_train0, y_test0 = self.prepare_data(self.sel_indexes)
-
+        print 'LEN XTRAIN',len(x_train0)
         def distort_latent(all,all_y,one,i_source,distort_dim=[0],distort_amount=[1.01]):
             PCA_ = PCA()
             pca = PCA_.fit(all)
@@ -404,10 +427,10 @@ class SynData():
             desc_mean_out_modified = AE.decoder.predict(one_encoded)
 
         # using pca instead of AE+pca
-        load_file = 'train_vars.bin'
+        load_file = 'train_vars_'+self.dataset+'.bin'
         #load_file = 'train_vars_comp.bin'
         print 'loading from file',load_file
-        train_vars_compressed, train_vars_std_compressed = pickle.load(open(load_file,'r'))
+        train_vars_compressed, train_vars_std_compressed, train_vras_s_compressed = pickle.load(open(load_file,'r'))
 
         def interpolate_latent_pca(vars,i_cur,i_source0,alpha=0.5,closest_point_ord=3):
             inverted=[]
@@ -476,7 +499,7 @@ class SynData():
 
         # s from svd
         texture=Texture()
-        UsVS = self.get_svds(self.get_G_kth(texture,x_train0[i2]))
+        UsVS = self.get_svds(self.get_G(texture,x_train0[i2]))
 
         print 'using modified latent variables'
 
@@ -529,7 +552,7 @@ class SynData():
         stats_src = get_stats(x_train0[i2]/255.0)
         stats_tar = get_stats(x_train0[ii]/255.0)
 
-        F0 = self.get_G_kth(texture,x_train0[ii])
+        F0 = self.get_G(texture,x_train0[ii])
         UsVS = self.get_svds(F0)
         self.new_G, self.desc_out = self.processF(UsVS,load_i=ii,load_mean=load['mean'],load_std=load['std'], load_singular=load['s'])
             # this uses desc file and saves new_G to be used by vgg_19_keras.py file
@@ -882,9 +905,12 @@ class Texture():
         cur_iter=0
         global stats_im
         stats_im = []
+        global res_im
+        res_im = []
         def callback(x):
             global cur_iter
             global stats_im
+            global res_im
             #print 'random number',np.random.rand(1)
             if not cur_iter%15:
                 im = np.reshape(x,imsize)[:,:,::-1]
@@ -896,6 +922,7 @@ class Texture():
                     # saveing all stats
                     stats_im = get_stats(im)
                     stats_src, stats_tar = self.stats
+                    res_im = im
                     with open('res/exp_%d_stats.txt'%self.exp_no,'w') as f:
                         f.write('stats src')
                         f.write(str(stats_src))
@@ -922,7 +949,7 @@ class Texture():
         except:
             pass
         stats_src, stats_tar = self.stats
-        return stats_src, stats_tar, stats_im
+        return stats_src, stats_tar, stats_im, res_im
         #pp[0,0].imshow(im_iter)
         #pp[0,1].imshow(res[::-1])
         #plt.show(block=False)
@@ -977,21 +1004,6 @@ def get_G_kth():
         ff.append(F0)
     pickle.dump(gg,open(saved_G,'w'))
     pickle.dump(ff,open(saved_F,'w'))
-
-def get_stats(im):
-    def standardize(x):
-        x=np.array(x)
-        x[np.isnan(x)]=0.0
-        x=x-np.min(x)
-        x=x/np.max(x)
-        return x
-
-    patch = standardize(im)
-    h,_ = hurst2d(patch,max_tau=7)
-    # estimate Gaussianity via kurtosis
-    kurt = kurtosis(patch.flatten())
-    coh = coherence(patch)
-    return dict({'H':h,'Kurtosis':kurt,'MeanCoh':np.mean(coh['logcoh'])})
 
 
 def getIm(fbm=False):
@@ -1062,15 +1074,32 @@ if __name__ == "__main__":
     for ee in [0.0,0.2,0.4,0.6,0.8,1.0]:
         exps.append({'ii':10,'order':3,'alphas':getAlpha(ee),'load': {'mean':True,'std':True,'s':True} })
 
+    # 23..28
+    def getAlpha(x):
+        alphas = np.ones(16)
+        alphas[:] = x
+        return alphas
+
+    for ee in [0.0,0.2,0.4,0.6,0.8,1.0]:
+        exps.append({'ii':10,'order':20,'alphas':getAlpha(ee),'load': {'mean':True,'std':True,'s':True} })
+
 
     #exps.append({'ii':8,'order':20,'alphas':np.ones(16)*0.8,'load': {'mean':False,'std':False,'s':False} })
 
     do_exps = [13,14,15,16] # in paper
     do_exps = [17,18,19,20,21,22] # new exp. for paper
+    do_exps = range(23,28+1)
 
     def remove_exp_files(num):
         for f in glob('res/exp_%d*'%num):
             remove(f)
+
+    # create data is it doesn't exist
+    m_file_name = 'm_train_other.bin'
+    if not exists(m_file_name):
+        syndata = SynData(dataset='other')
+        print 'GENERATING DATA'
+        syndata.save_step()
 
     for exp_no,exp in enumerate(exps):
         #exp = exps[exp_no]
@@ -1081,7 +1110,8 @@ if __name__ == "__main__":
         # remove previously saved files.
         remove_exp_files(exp_no)
 
-        syndata = SynData()
+        #syndata = SynData(dataset='kth')
+        syndata = SynData(dataset='other')
 
         # step 1 - load data
         syndata.load_step()
@@ -1102,13 +1132,14 @@ if __name__ == "__main__":
 
         # syn from modified G
         plt.close('all')
-        stats_src, stats_tar, stats_im = texture.synTexture(im=None,G0_from='new_G.bin',onlyGram = False,maxiter=230)
+        stats_src, stats_tar, stats_im, res_im = texture.synTexture(im=None,G0_from='new_G.bin',onlyGram = False,maxiter=230)
 
         print 'saving experiment stats'
         exp_stats = {}
         exp_stats['src'] = stats_src
         exp_stats['tar'] = stats_tar
         exp_stats['syn'] = stats_im
+        exp_stats['res_im'] = res_im
         exp_stats['alphas'] = exp['alphas']
         pickle.dump(exp_stats,open('res/exp_%d_stats.bin'%exp_no,'w'))
 

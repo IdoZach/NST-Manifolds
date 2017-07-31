@@ -96,6 +96,59 @@ def generate_2d_fbms(N=10000,n=32,reCalc=False,resize=None,noise=False):
 class GetOutOfLoop( Exception ):
     pass
 
+
+
+def get_other_imgs(N=10000,n=32,reCalc=False,resize=None):
+    #reCalc = True
+    #reCalc = False
+    fname = 'data_other.bin'
+    if os.path.exists(fname) and not reCalc:
+        print 'loading data from file'
+        Xtrain, Xtest, Ytrain, Ytest = pickle.load(open(fname,'r'))
+    else:
+        print 'generating data and saving'
+        np.random.seed(0)
+        X = []
+        H = np.linspace(0.05,0.8,N)# [0.5]*N
+        feats=[]
+        for k,i in enumerate(H):
+            if not k % 100:
+                print 'done %f'%(1.0*k/N)
+            #fbmr,fgnr,times= fbm(n-1,i,L=1)
+            fbm,noises = synth2(N=n,H=i)
+            fbm = fbm-np.min(fbm)
+            fbm = fbm/np.max(fbm)
+
+            X.append(fbm)
+            kurt = kurtosis(fbm.flatten())
+            coh = coherence(fbm)
+            #print(kurt)
+            feats.append([i, kurt, np.mean(coh['logcoh']), np.std(coh['logcoh'])])
+
+
+        X0=np.array(X)
+        Y = np.array(feats)
+        #X=np.expand_dims(X0,2) # to make input of size (n,1) instead of just (n)
+        if resize is not None:
+            sz=int(np.sqrt(resize))
+            X0r = np.zeros([X0.shape[0],sz,sz])
+            for i in range(X0.shape[0]):
+                X0r[i,:,:] = imresize(X0[i,:,:],[sz,sz])
+                #print X0r[i,:,:]
+                #plt.imshow(X0r[i,:,:],interpolation='none',cmap='gray')
+                #plt.show()
+            X0=X0r
+
+
+        Xtrain, Xtest, Ytrain, Ytest = train_test_split(X0,Y,test_size=0.2,random_state=0)
+
+        pickle.dump([Xtrain,Xtest,Ytrain,Ytest],open(fname,'w'))
+
+    return Xtrain, Xtest, Ytrain, Ytest
+
+
+
+
 def get_kth_imgs(N=10000,n=32,reCalc=False,resize=None):
     #reCalc = True
     #reCalc = False
