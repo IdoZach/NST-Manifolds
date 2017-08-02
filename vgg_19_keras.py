@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from os.path import exists
 from os import remove
 from glob import glob
-from fbm_data import synth2, get_kth_imgs, get_other_imgs
+from fbm_data import synth2, get_kth_imgs, get_other_imgs, get_kurtsim_imgs
 from fbm2d import hurst2d
 from scipy.stats import kurtosis
 from coherence import coherence
@@ -239,11 +239,17 @@ class SynData():
                 x_train0[i]=x_train0[i]/np.max(x_train0[i])*256.0
             print 'two first samples are fBm'
 
-        else:
-            print 'loading from OTHER (SIM) dataset'
+        elif self.dataset is 'other': # fbm
+            print 'loading from OTHER (fbm) dataset'
             x_train0, x_test0, y_train0, y_test0 = \
                 get_other_imgs(N=1000,n=self.n,reCalc=False,resize=self.original_dim)
             #print 'NOT IMPLEMENTED'
+        elif self.dataset is 'kurtsim':
+            print 'loading from kurt (sim) dataset'
+            x_train0, x_test0, y_train0, y_test0 = \
+                get_kurtsim_imgs(N=120,n=self.n,reCalc=False,resize=self.original_dim)
+        else:
+            print 'NOT IMPLEMENTED'
 
         if self.dataset is 'kth' and idxs is not None:
             return x_train0[idxs], x_test0, y_train0[idxs], y_test0
@@ -760,10 +766,14 @@ def VGG_19(weights_path=None,onlyconv=False):
     return model
 
 
+global glob_model
+glob_model = VGG_19_1('vgg19_weights_tf_dim_ordering_tf_kernels.h5',onlyconv=True,caffe=True)
+
 cur_iter=1
 class Texture():
     def __init__(self, use_caffe=True, exp_no=0, stats=None):
-        self.model = VGG_19_1('vgg19_weights_tf_dim_ordering_tf_kernels.h5',onlyconv=True,caffe=use_caffe)
+        #self.model = VGG_19_1('vgg19_weights_tf_dim_ordering_tf_kernels.h5',onlyconv=True,caffe=use_caffe)
+        self.model = glob_model
         self.use_caffe = use_caffe
         self.exp_no = exp_no
         self.stats = stats
@@ -1074,30 +1084,44 @@ if __name__ == "__main__":
     for ee in [0.0,0.2,0.4,0.6,0.8,1.0]:
         exps.append({'ii':10,'order':3,'alphas':getAlpha(ee),'load': {'mean':True,'std':True,'s':True} })
 
-    # 23..28
+    # 23..56
+    dataset_type = 'other' # fbms
     def getAlpha(x):
         alphas = np.ones(16)
         alphas[:] = x
         return alphas
 
-    for ee in [0.0,0.2,0.4,0.6,0.8,1.0]:
-        exps.append({'ii':10,'order':20,'alphas':getAlpha(ee),'load': {'mean':True,'std':True,'s':True} })
+    alpha_v = [0.0,0.2,0.4,0.6,0.8,1.0]
+    alpha_v = np.arange(0,1,0.03)
+    print 'alpha vector', alpha_v
+    for ee in alpha_v:
+        exps.append({'ii':10,'order':80,'alphas':getAlpha(ee),'load': {'mean':True,'std':True,'s':True} })
 
-
+    # 57..90
+    dataset_type = 'kurtsim'
+    #alpha_v = [0.0,0.2,0.4,0.6,0.8,1.0]
+    alpha_v = np.arange(0,1,0.01)
+    print 'alpha vector', alpha_v
+    cur_exp_len = len(exps)
+    for ee in alpha_v:
+        exps.append({'ii':10,'order':80,'alphas':getAlpha(ee),'load': {'mean':True,'std':True,'s':True} })
+    print 'len of cur experiments',len(exps) - cur_exp_len
     #exps.append({'ii':8,'order':20,'alphas':np.ones(16)*0.8,'load': {'mean':False,'std':False,'s':False} })
 
-    do_exps = [13,14,15,16] # in paper
-    do_exps = [17,18,19,20,21,22] # new exp. for paper
-    do_exps = range(23,28+1)
+    #do_exps = [13,14,15,16] # in paper
+    #do_exps = [17,18,19,20,21,22] # new exp. for paper
+
+    #do_exps = range(23,23+len(alpha_v)) # H sym
+    do_exps = range(57,57+len(alpha_v)) # kurt sym
 
     def remove_exp_files(num):
         for f in glob('res/exp_%d*'%num):
             remove(f)
 
     # create data is it doesn't exist
-    m_file_name = 'm_train_other.bin'
+    m_file_name = 'm_train_'+dataset_type+'.bin'
     if not exists(m_file_name):
-        syndata = SynData(dataset='other')
+        syndata = SynData(dataset=dataset_type)
         print 'GENERATING DATA'
         syndata.save_step()
 
@@ -1111,7 +1135,7 @@ if __name__ == "__main__":
         remove_exp_files(exp_no)
 
         #syndata = SynData(dataset='kth')
-        syndata = SynData(dataset='other')
+        syndata = SynData(dataset=dataset_type)
 
         # step 1 - load data
         syndata.load_step()

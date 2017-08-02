@@ -13,6 +13,7 @@ from coherence import coherence
 import tensorflow as tf
 import keras.backend as K
 import gc
+import cv2
 
 def generate_1d_fbms(N=10000,n=256,reCalc=False):
     #reCalc = True
@@ -146,6 +147,56 @@ def get_other_imgs(N=10000,n=32,reCalc=False,resize=None):
 
     return Xtrain, Xtest, Ytrain, Ytest
 
+
+def get_kurtsim_imgs(N=120,n=32,reCalc=False,resize=None):
+    #reCalc = True
+    #reCalc = False
+    fname = 'data_kurtsim.bin'
+    if os.path.exists(fname) and not reCalc:
+        print 'loading data from file'
+        Xtrain, Xtest, Ytrain, Ytest = pickle.load(open(fname,'r'))
+    else:
+        print 'generating data and saving'
+        np.random.seed(0)
+        X = []
+        stds = np.linspace(0.0,0.4,N)# [0.5]*N
+        feats=[]
+        im = cv2.imread('/home/ido/brodatz/1.1.01.tiff').astype(np.float32)
+        im = im[:224,:224,0]
+        im = im-np.min(im)
+        im0 = im/np.max(im)
+
+        #plt.imshow(im)
+        for k,s in enumerate(stds):
+            if not k % 20:
+                print 'done %f'%(1.0*k/N)
+            im = im0 + np.random.randn(224,224)*s
+
+            X.append(im)
+            h = hurst2d(im,max_tau=7)
+            kurt = kurtosis(im.flatten())
+            coh = coherence(im)
+            #print(kurt)
+            feats.append([h, kurt, np.mean(coh['logcoh']), np.std(coh['logcoh'])])
+
+        X0=np.array(X)
+        Y = np.array(feats)
+        #X=np.expand_dims(X0,2) # to make input of size (n,1) instead of just (n)
+        if resize is not None:
+            sz=int(np.sqrt(resize))
+            X0r = np.zeros([X0.shape[0],sz,sz])
+            for i in range(X0.shape[0]):
+                X0r[i,:,:] = imresize(X0[i,:,:],[sz,sz])
+                #print X0r[i,:,:]
+                #plt.imshow(X0r[i,:,:],interpolation='none',cmap='gray')
+                #plt.show()
+            X0=X0r
+
+        Xtrain, Xtest, Ytrain, Ytest = train_test_split(X0,Y,test_size=0.2,random_state=0)
+
+        pickle.dump([Xtrain,Xtest,Ytrain,Ytest],open(fname,'w'))
+
+    return Xtrain, Xtest, Ytrain, Ytest
 
 
 
