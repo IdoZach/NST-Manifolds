@@ -256,7 +256,8 @@ class SynData():
         else:
             return x_train0, x_test0, y_train0, y_test0
 
-    def __init__(self, step_save=False, use_ae=False, dataset='kth'):
+    def __init__(self, step_save=False, use_ae=False, dataset='kth',
+                 choose_classes = ['woola','woolb','woolc','woold'] ):
         ### here we run with 'save_step=True' to save data.
         ### then we run with 'False' to save the encoded information and G matrices
         ### this can be used in mu_analysis.py to analyse and in vgg_19_keras.py to generate
@@ -267,7 +268,21 @@ class SynData():
         self.n=200
         self.weights = np.array([16,16,4,4,2,2,2,2,1,1,1,1,1,1,1,1],dtype=np.float32) # scaling of means according to inverse matrix size
         self.dataset=dataset
+        self.choose_classes = choose_classes
 
+    def get_all_samples(self):
+        fname = 'used_data_%s.bin'%self.dataset
+        y_train0, y_test0 = pickle.load(open('m_y.bin','r'))
+        choose_classes = self.choose_classes
+        use_all = len(choose_classes)==0
+        sel_indexes = []
+        for i,te in enumerate(y_train0):
+            if te[2] in choose_classes or use_all:
+                sel_indexes.append(i)
+        x_train0, x_test0, y_train0, y_test0 = self.prepare_data(sel_indexes)
+        pickle.dump([x_train0, x_test0, y_train0, y_test0],open(fname,'w'))
+        print 'saved data to file',fname
+        return x_train0, x_test0, y_train0, y_test0
 
     def save_step(self):
         # prepare training data
@@ -307,7 +322,7 @@ class SynData():
 
         sel_indexes = []
         if self.dataset is 'kth':
-            choose_classes = ['woola','woolb','woolc','woold']
+            choose_classes = self.choose_classes
             #choose_classes = []
 
             use_all = len(choose_classes)==0
@@ -436,28 +451,40 @@ class SynData():
         load_file = 'train_vars_'+self.dataset+'.bin'
         #load_file = 'train_vars_comp.bin'
         print 'loading from file',load_file
-        train_vars_compressed, train_vars_std_compressed, train_vras_s_compressed = pickle.load(open(load_file,'r'))
+        train_vars_compressed, train_vars_std_compressed, train_vars_s_compressed = pickle.load(open(load_file,'r'))
 
-        def interpolate_latent_pca(vars,i_cur,i_source0,alpha=0.5,closest_point_ord=3):
+        def interpolate_latent_pca(vars,i_cur,i_source0,alpha=0.5,closest_point_ord=3,apply_log=False):
             inverted=[]
-            i_source=None
+            i_source=i_source0 # may initially be None
+            if apply_log:
+                fun1 = lambda x:np.log(1+x)
+                fun2 = lambda x:np.exp(x)-1
+            else:
+                fun1 = lambda x:x
+                fun2 = lambda x:x
+
             for cur in vars:
                 #PCA_ = PCA(n_components=20)
                 PCA_ = PCA()
-                pca = PCA_.fit(cur)
+                inf_locations = np.isinf(cur)
+                cur[inf_locations] = 0
+                pca = PCA_.fit(fun1(cur))
 
-                c_from = PCA_.transform(cur[i_cur].reshape(1,-1))
+                c_from = PCA_.transform(fun1(cur[i_cur]).reshape(1,-1))
                 if i_source is None: # set only once
-                    c_all = PCA_.transform(cur)
+                    c_all = PCA_.transform(fun1(cur))
                     i_source = np.argsort(np.sum(np.square(c_all - c_from),axis=1))[closest_point_ord]
-                c_to = PCA_.transform(cur[i_source].reshape(1,-1))
+                c_to = PCA_.transform(fun1(cur[i_source]).reshape(1,-1))
                 #print 'alpha', alpha
-                c_from[0] = (1-alpha)*c_to[0]+alpha*c_from[0]
-                inv1 = PCA_.inverse_transform(c_from)
-                inv2 = cur[i_cur]
-                #print 'inv1', inv1
+                c_from[0] = (1-alpha)*c_from[0]+alpha*c_to[0]
+                inv1 = fun2(PCA_.inverse_transform(c_from))
+                #inv2 = cur[i_cur]
+                #print 'inv1', inv1[0]
+                #print 'sss',inf_locations[i_source]
                 #print 'inv2', inv2
-
+                inv11 = inv1[0]
+                inv11 = [v if not ci else -np.inf for v,ci in zip(inv11, inf_locations[i_source])]
+                inv1[0] = inv11
                 inverted.append(inv1)
                 #print 'debug'
                 #inverted.append(inv2)
@@ -492,15 +519,26 @@ class SynData():
         desc_std_out = [ np.array([t[ii]]) for t in train_vars_std_compressed ]
 
 
-        desc_mean_out_modified, i2_chosen = interpolate_latent_pca(train_vars_compressed,ii,i2,alpha,order)
 
-        # TODO why not interpolate in PCA space also the STD???
+        desc_mean_out_modified, i2_chosen = interpolate_latent_pca(train_vars_compressed,ii,None,alpha,order)
+
+
 
         i2 = i2_chosen
         #i2 = ii # control
-        desc_std_out2 = [ np.array([t[i2]]) for t in train_vars_std_compressed ]
-        desc_std_out_modified = [ a*g+(1-a)*h for a,g,h in
-                                      zip(alphas,desc_std_out,desc_std_out2)]
+
+        # interpolate std in parameter space:
+        interp_param_space = False# True
+        if not interp_param_space:
+            desc_std_out2 = [ np.array([t[i2]]) for t in train_vars_std_compressed ]
+            desc_std_out_modified = [ (1-a)*g+a*h for a,g,h in
+                                          zip(alphas,desc_std_out,desc_std_out2)]
+        else:
+        # interpolate std in pca space:
+            desc_std_out_modified,_= interpolate_latent_pca(train_vars_std_compressed,
+                                                        ii,i2_chosen,alpha,order,apply_log=True)
+
+        # re-normalize means
         desc_mean_out = [1.0*t/w for t,w in zip(desc_mean_out_modified,self.weights)]
 
         # s from svd
@@ -524,10 +562,21 @@ class SynData():
         new_desc['std'] = desc_std_out_modified
 
         # TODO why not interpolate singular values also?
+        if interp_param_space:
+            #print train_vars_s_compressed
+            desc_s_modified,_ = interpolate_latent_pca(train_vars_s_compressed,ii,i2_chosen,alpha,order,apply_log=False)
+            desc_s_modified = [d.squeeze() for d in desc_s_modified]
+        else:
+            desc_s_modified = [np.log(y) for x in UsVS[1] for y in x] # UsVS[1] is the s (singular)
+        #pickle.dump( [desc_s_modified, [np.log(y) for x in UsVS[1] for y in x] ],open('temp.bin','w'))
 
-        new_desc['s'] = [np.log(y) for x in UsVS[1] for y in x] # UsVS[1] is the s (singular)
+
+        #print 'd1',desc_s_modified
+        #print 'd2',[np.log(y) for x in UsVS[1] for y in x] # UsVS[1] is the s (singular)
+
+        new_desc['s'] = desc_s_modified
         # interpolate also stds
-        mul = lambda x,y,a: [a*g+(1-a)*h for g,h in zip(x,y)]
+        mul = lambda x,y,a: [(1-a)*g+a*h for g,h in zip(x,y)]
         #new_desc['std'] = mul(new_desc['std'],source_desc['std'],alpha)
         #source_desc = self.m_train[i_source].copy() # point 2 for interpolation
         #new_desc['mean'] = source_desc['mean']
@@ -1076,28 +1125,31 @@ if __name__ == "__main__":
     exps.append({'ii':63,'order':30,'alphas':alphas,'load': {'mean':True,'std':True,'s':True} })
 
     # 17..22
+    dataset_type = 'kth'
     def getAlpha(x):
-        alphas = np.ones(16)
-        alphas[6:] = x
+        alphas = np.zeros(16)
+        alphas[:] = x
         return alphas
 
     for ee in [0.0,0.2,0.4,0.6,0.8,1.0]:
-        exps.append({'ii':10,'order':3,'alphas':getAlpha(ee),'load': {'mean':True,'std':True,'s':True} })
+        exps.append({'ii':10,'order':20,'alphas':getAlpha(ee),'load': {'mean':True,'std':True,'s':True} })
 
     # 23..56
+    """
     dataset_type = 'other' # fbms
     def getAlpha(x):
         alphas = np.ones(16)
         alphas[:] = x
         return alphas
-
+    cur_exp_len = len(exps)
     alpha_v = [0.0,0.2,0.4,0.6,0.8,1.0]
-    alpha_v = np.arange(0,1,0.03)
+    alpha_v = np.arange(0,1,0.05)
     print 'alpha vector', alpha_v
     for ee in alpha_v:
         exps.append({'ii':10,'order':80,'alphas':getAlpha(ee),'load': {'mean':True,'std':True,'s':True} })
-
+    print 'len of cur experiments',len(exps) - cur_exp_len
     # 57..90
+
     dataset_type = 'kurtsim'
     #alpha_v = [0.0,0.2,0.4,0.6,0.8,1.0]
     alpha_v = np.arange(0,1,0.01)
@@ -1106,13 +1158,14 @@ if __name__ == "__main__":
     for ee in alpha_v:
         exps.append({'ii':10,'order':80,'alphas':getAlpha(ee),'load': {'mean':True,'std':True,'s':True} })
     print 'len of cur experiments',len(exps) - cur_exp_len
+    """
     #exps.append({'ii':8,'order':20,'alphas':np.ones(16)*0.8,'load': {'mean':False,'std':False,'s':False} })
 
     #do_exps = [13,14,15,16] # in paper
-    #do_exps = [17,18,19,20,21,22] # new exp. for paper
+    do_exps = [17,18,19,20,21,22] # new exp. for paper
 
     #do_exps = range(23,23+len(alpha_v)) # H sym
-    do_exps = range(57,57+len(alpha_v)) # kurt sym
+    #do_exps = range(57,57+len(alpha_v)) # kurt sym
 
     def remove_exp_files(num):
         for f in glob('res/exp_%d*'%num):
@@ -1125,77 +1178,85 @@ if __name__ == "__main__":
         print 'GENERATING DATA'
         syndata.save_step()
 
-    for exp_no,exp in enumerate(exps):
-        #exp = exps[exp_no]
+    just_save_dataset_imgs = True
 
-        if exp_no not in do_exps:
-            continue
-        print '######## CUR EXP',exp_no, '#########'
-        # remove previously saved files.
-        remove_exp_files(exp_no)
+    if just_save_dataset_imgs: # mainly for learn_metric.py file
+        syndata =SynData(dataset=dataset_type)
+        syndata.get_all_samples()
 
-        #syndata = SynData(dataset='kth')
-        syndata = SynData(dataset=dataset_type)
+    else: # normal run
+        for exp_no,exp in enumerate(exps):
+            #exp = exps[exp_no]
 
-        # step 1 - load data
-        syndata.load_step()
+            if exp_no not in do_exps:
+                continue
+            print '######## CUR EXP',exp_no, '#########'
+            # remove previously saved files.
+            remove_exp_files(exp_no)
 
-        # step 2 - analyse and save new
-        #MuAnalysis()
+            #syndata = SynData(dataset='kth')
+            syndata = SynData(dataset=dataset_type)
 
-        # steps 3+ - save new G and synthesize
-        stats_src, stats_tar = syndata.save_new_G(exp['ii'],exp['order'],exp['alphas'],exp['load'],exp_no=exp_no)
+            # step 1 - load data
+            syndata.load_step()
 
-        # synthesize
-        texture = Texture(exp_no=exp_no,stats = [stats_src, stats_tar])
+            # step 2 - analyse and save new
+            #MuAnalysis()
 
-        # syn fbm
-        #use_fbm=True
+            # steps 3+ - save new G and synthesize
+            stats_src, stats_tar = syndata.save_new_G(exp['ii'],exp['order'],exp['alphas'],exp['load'],exp_no=exp_no)
+
+            # synthesize
+            texture = Texture(exp_no=exp_no,stats = [stats_src, stats_tar])
+
+            # syn fbm
+            #use_fbm=True
+            #im = getIm(use_fbm)
+            #texture.synTexture(im=im,G0_from='new_G.bin',onlyGram = False)
+
+            # syn from modified G
+            plt.close('all')
+            stats_src, stats_tar, stats_im, res_im = texture.synTexture(im=None,G0_from='new_G.bin',onlyGram = False,maxiter=230)
+
+            print 'saving experiment stats'
+            exp_stats = {}
+            exp_stats['src'] = stats_src
+            exp_stats['tar'] = stats_tar
+            exp_stats['syn'] = stats_im
+            exp_stats['res_im'] = res_im
+            exp_stats['alphas'] = exp['alphas']
+            pickle.dump(exp_stats,open('res/exp_%d_stats.bin'%exp_no,'w'))
+
+        """
+        original_dim = 224**2
+        n=200
+        x_train0, x_test0, y_train0, y_test0 = \
+            get_kth_imgs(N=50000,n=n,reCalc=False,resize=original_dim)
+        im = x_train0[0]
+        im = np.stack([im,im,im],axis=2).astype(np.float32) # grayscale
+
+        #use_fbm=False
         #im = getIm(use_fbm)
-        #texture.synTexture(im=im,G0_from='new_G.bin',onlyGram = False)
 
-        # syn from modified G
-        plt.close('all')
-        stats_src, stats_tar, stats_im, res_im = texture.synTexture(im=None,G0_from='new_G.bin',onlyGram = False,maxiter=230)
+        do_synth=True
+        im0=im
 
-        print 'saving experiment stats'
-        exp_stats = {}
-        exp_stats['src'] = stats_src
-        exp_stats['tar'] = stats_tar
-        exp_stats['syn'] = stats_im
-        exp_stats['res_im'] = res_im
-        exp_stats['alphas'] = exp['alphas']
-        pickle.dump(exp_stats,open('res/exp_%d_stats.bin'%exp_no,'w'))
+        #texture.synTexture(im)
 
-    """
-    original_dim = 224**2
-    n=200
-    x_train0, x_test0, y_train0, y_test0 = \
-        get_kth_imgs(N=50000,n=n,reCalc=False,resize=original_dim)
-    im = x_train0[0]
-    im = np.stack([im,im,im],axis=2).astype(np.float32) # grayscale
-
-    #use_fbm=False
-    #im = getIm(use_fbm)
-
-    do_synth=True
-    im0=im
-
-    #texture.synTexture(im)
-
-    ##
-    if do_synth:
-        texture.synTexture(im,G0_from='new_G.bin',onlyGram = False)
-    else: # save G0
         ##
-        g0_fname = 'G0.bin'
-        reCalc=True
-        if not exists(g0_fname) or reCalc:
-            G0 = synTexture(im,onlyGram = True)
-            pickle.dump(G0,open(g0_fname,'w'))
-            print 'saved G0 to file', g0_fname
-        else:
-            print 'loading G0 from file', g0_fname
-            G0 = pickle.load(open(g0_fname,'r'))
-        print G0
-    """
+        if do_synth:
+            texture.synTexture(im,G0_from='new_G.bin',onlyGram = False)
+        else: # save G0
+            ##
+            g0_fname = 'G0.bin'
+            reCalc=True
+            if not exists(g0_fname) or reCalc:
+                G0 = synTexture(im,onlyGram = True)
+                pickle.dump(G0,open(g0_fname,'w'))
+                print 'saved G0 to file', g0_fname
+            else:
+                print 'loading G0 from file', g0_fname
+                G0 = pickle.load(open(g0_fname,'r'))
+            print G0
+        """
+

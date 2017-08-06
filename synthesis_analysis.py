@@ -71,4 +71,29 @@ for i,(f,l,s) in enumerate(zip(feats,featlims,feat_str)):
 #    plt.plot([0,1],[ l[1], l[1] ],'g')
 
 
-plt.show()
+plt.show(block=False)
+
+#params = {'legend.fontsize': 'larger',
+#          'figure.figsize': (9, 9),
+#         'axes.labelsize': 'larger',
+#         'axes.titlesize':'larger',
+#         'xtick.labelsize':'larger',
+#         'ytick.labelsize':'larger'}
+#plt.rcParams.update(params)
+# save for paper
+save_fname0 = 'stats-%d-%d-'%(exps[0],exps[-1])
+fn = lambda x: save_fname0+x+'.pdf'
+plt.rcParams['xtick.labelsize'] = 30
+plt.rcParams['ytick.labelsize'] = 30
+for i,(f,l,s) in enumerate(zip(feats,featlims,feat_str)):
+    plt.figure(0), plt.hold(False)
+    #print l
+    plt.plot(t,f,'.-')#, plt.title('%s,%1.2f...%1.2f'%(s,l[0],l[1]))
+
+    plt.xlabel(r'$\alpha$',fontsize=30)
+    plt.ylabel(s,fontsize=30)
+    plt.tight_layout()
+    plt.savefig(fn(s))
+#    plt.plot([0,1],[ l[0], l[0] ],'r')
+#    plt.plot([0,1],[ l[1], l[1] ],'g')
+
