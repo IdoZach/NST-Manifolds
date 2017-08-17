@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="99f68a8b-4240-489b-af70-fc7628b514bf" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/plot_3d_mayavi.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/learn_metric.py" afterPath="$PROJECT_DIR$/learn_metric.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vgg_19_keras.py" afterPath="$PROJECT_DIR$/vgg_19_keras.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -88,14 +84,14 @@
       <file leaf-file-name="learn_metric.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/learn_metric.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="391">
-              <caret line="400" column="23" lean-forward="false" selection-start-line="400" selection-start-column="23" selection-end-line="400" selection-end-column="23" />
+            <state relative-caret-position="218">
+              <caret line="388" column="20" lean-forward="false" selection-start-line="388" selection-start-column="20" selection-end-line="388" selection-end-column="20" />
               <folding>
                 <element signature="e#0#17#0" expanded="true" />
-                <element signature="e#3743#5762#0" expanded="false" />
-                <element signature="e#8761#13466#0" expanded="false" />
-                <element signature="e#15912#16508#1" expanded="false" />
-                <element signature="e#17929#18619#1" expanded="false" />
+                <element signature="e#3819#5838#0" expanded="false" />
+                <element signature="e#9102#13807#0" expanded="false" />
+                <element signature="e#17975#18571#1" expanded="false" />
+                <element signature="e#19992#20682#1" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -116,6 +112,18 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="analyze_metric_res.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/analyze_metric_res.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="472">
+              <caret line="51" column="18" lean-forward="false" selection-start-line="51" selection-start-column="18" selection-end-line="51" selection-end-column="18" />
+              <folding>
+                <element signature="e#0#31#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
     </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
@@ -127,7 +135,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>.eig</find>
       <find>'3d'</find>
       <find>map</find>
       <find>plt.cm</find>
@@ -154,9 +161,10 @@
       <find>scip</find>
       <find>stack</find>
       <find>rcParams</find>
-      <find>legend</find>
       <find>mkdir</find>
       <find>assign</find>
+      <find>legend</find>
+      <find>four_</find>
     </findStrings>
     <replaceStrings>
       <replace>Conv2D</replace>
@@ -229,6 +237,8 @@
         <option value="$PROJECT_DIR$/test_mayavi.py" />
         <option value="$PROJECT_DIR$/plot_3d_mayavi.py" />
         <option value="$PROJECT_DIR$/temp1_udi.py" />
+        <option value="$PROJECT_DIR$/analyze_graph_pos.bin.py" />
+        <option value="$PROJECT_DIR$/analyze_metric_res.py" />
         <option value="$PROJECT_DIR$/learn_metric.py" />
       </list>
     </option>
@@ -270,7 +280,17 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="ProjectPane" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="python_fbm" type="b2602c69:ProjectViewProjectNode" />
+              <item name="python_fbm" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
       <pane id="Scratches" />
     </panes>
   </component>
@@ -438,7 +458,7 @@
       <option name="USE_KEYWORD" value="false" />
       <method />
     </configuration>
-    <configuration name="draw_ellipse" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="analyze_graph_pos.bin" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -450,7 +470,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="python_fbm" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/draw_ellipse.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/analyze_graph_pos.bin.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -526,17 +546,17 @@
     <list size="5">
       <item index="0" class="java.lang.String" itemvalue="Python.vgg_19_keras" />
       <item index="1" class="java.lang.String" itemvalue="Python.learn_metric" />
-      <item index="2" class="java.lang.String" itemvalue="Python.draw_ellipse" />
-      <item index="3" class="java.lang.String" itemvalue="Python.plot_3d_mayavi" />
-      <item index="4" class="java.lang.String" itemvalue="Python.temp1_udi" />
+      <item index="2" class="java.lang.String" itemvalue="Python.plot_3d_mayavi" />
+      <item index="3" class="java.lang.String" itemvalue="Python.temp1_udi" />
+      <item index="4" class="java.lang.String" itemvalue="Python.analyze_graph_pos.bin" />
     </list>
     <recent_temporary>
       <list size="5">
         <item index="0" class="java.lang.String" itemvalue="Python.learn_metric" />
-        <item index="1" class="java.lang.String" itemvalue="Python.temp1_udi" />
-        <item index="2" class="java.lang.String" itemvalue="Python.plot_3d_mayavi" />
-        <item index="3" class="java.lang.String" itemvalue="Python.vgg_19_keras" />
-        <item index="4" class="java.lang.String" itemvalue="Python.draw_ellipse" />
+        <item index="1" class="java.lang.String" itemvalue="Python.analyze_graph_pos.bin" />
+        <item index="2" class="java.lang.String" itemvalue="Python.temp1_udi" />
+        <item index="3" class="java.lang.String" itemvalue="Python.plot_3d_mayavi" />
+        <item index="4" class="java.lang.String" itemvalue="Python.vgg_19_keras" />
       </list>
     </recent_temporary>
   </component>
@@ -545,6 +565,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="625" y="23" width="1051" height="979" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.10406343" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32894737" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -573,20 +594,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/main1.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main1.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/fbm/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -930,6 +937,14 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/analyze_graph_pos.bin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="260">
+          <caret line="34" column="9" lean-forward="false" selection-start-line="34" selection-start-column="9" selection-end-line="34" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/mu_analysis.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="337">
@@ -943,16 +958,26 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/analyze_metric_res.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="472">
+          <caret line="51" column="18" lean-forward="false" selection-start-line="51" selection-start-column="18" selection-end-line="51" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/learn_metric.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="400" column="23" lean-forward="false" selection-start-line="400" selection-start-column="23" selection-end-line="400" selection-end-column="23" />
+        <state relative-caret-position="218">
+          <caret line="388" column="20" lean-forward="false" selection-start-line="388" selection-start-column="20" selection-end-line="388" selection-end-column="20" />
           <folding>
             <element signature="e#0#17#0" expanded="true" />
-            <element signature="e#3743#5762#0" expanded="false" />
-            <element signature="e#8761#13466#0" expanded="false" />
-            <element signature="e#15912#16508#1" expanded="false" />
-            <element signature="e#17929#18619#1" expanded="false" />
+            <element signature="e#3819#5838#0" expanded="false" />
+            <element signature="e#9102#13807#0" expanded="false" />
+            <element signature="e#17975#18571#1" expanded="false" />
+            <element signature="e#19992#20682#1" expanded="false" />
           </folding>
         </state>
       </provider>

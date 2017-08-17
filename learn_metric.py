@@ -15,8 +15,8 @@ from plot_3d_mayavi import DrawEllipse, ImageOverlay
 import scipy.io as sio
 import networkx as nx
 from os import mkdir
-
-
+from shutil import rmtree
+from analyze_metric_res import cluster_mat_analysis
 class LearnMetric:
     def __init__(self,emb_dim=10,intrinsic_dim=5,sqeps=0.1,genericEmbed=None):
         self.emb_dim=emb_dim
@@ -187,14 +187,20 @@ class LearnMetric:
             # display
             pos = dict(zip(range(n),genEmb[:,:2])) # 2D for display
 
-            colors = ['r','g','b','k','y']
+            pickle.dump(pos,open('graph_pos.bin','w'))
+            print 'saved pos to file graph_pos.bin'
+
+            colors = ['r','g','b','y','m']
             if disp_i <> True:
                 plt.figure(disp_i+1)
-            nx.draw(G,pos,nodelist=centroid_nodes,edgelist=[],
-                    node_color=colors[:len(centroid_nodes)],
-                    node_size=40)
             for centroid,color in zip(centroid_nodes,colors):
                 nx.draw(G,pos,nodelist=assignments[centroid],node_color=color,width=0.01,node_size=2)
+            nodes = nx.draw_networkx_nodes(G,pos,nodelist=centroid_nodes,edgelist=[],
+                            node_color=colors[:len(centroid_nodes)],
+                            node_size=15,node_shape='^')
+            nodes.set_edgecolor('k')
+            nodes.set_linewidth(0.3)
+            #nx.draw(G,pos,)
 
             #plt.show()
         return assignments
@@ -370,24 +376,37 @@ def mainmain():
     emb_dim = 6
     Metric = LearnMetric(emb_dim=emb_dim,intrinsic_dim=3,sqeps=0.01)
 
+    # discard first entry (fbm)
+    discard_fbm_sample = False
+    if discard_fbm_sample:
+        data=data[1:,:]
+        x_train0 = x_train0[1:]
+        y_train0 = y_train0[1:]
+
     genEmb,H, explained_var = Metric.learnMetric(data)
 
-
     ## discrete geodesic k-means
+    num_clusters = 3
+
 
     G, weights = Metric.calcDistance(data,genEmb,explained_var[:emb_dim],H)
-    init_centroids = [0,10,20,30]
+    init_centroids = [0,10,20,30,40,50,60,70] # SET number of clusters here
+    init_centroids=init_centroids[:num_clusters]
+
     centroids = dict(zip(weights,[ init_centroids,init_centroids ]))
     assignments = dict(zip(weights,[ [], [] ]))
     #plt.ion()
-    for iter in range(8):
+    for iter in range(5):
         print 'ITERATION', iter
         for i, weight in enumerate(weights):
-            plt.figure(i)
+            fig=plt.figure(i)
             ax=plt.subplot(3,4,iter+1)
             assignments[weight] = Metric.kmeans_assign(G,weight,centroids[weight],H.shape[2],genEmb,disp_i=True)
             centroids[weight] = Metric.kmeans_update(G,weight,assignments[weight],H.shape[2],genEmb,disp_i=None)
+            extent = ax.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
             ax.set_title('%s: iter %d'%(weight,iter))
+            fig.savefig('clust_%s_iter_%d.pdf'%(weight,iter), bbox_inches=extent)
+
     # save images by their assignments
     def mkdirr(x):
         try:
@@ -395,15 +414,42 @@ def mainmain():
         except:
             pass
 
+    rmtree('clusters')
     mkdirr('clusters')
-
+    if not discard_fbm_sample:
+        y_train0[0][2]='fbm'
+    subclasses = dict(zip(['woola','woolb','woolc','woold','fbm'],[0,1,2,3,4]))
+    total_class_per_clust = {'int':[],'euc':[]}
     for w,assignment in assignments.iteritems():
         mkdirr('clusters/%s'%w[:3])
-        for i,cluster in assignment.iteritems():
+        class_per_clust = [ [], [], [], [], [] ]
+        for ind,(i,cluster) in enumerate(assignment.iteritems()):
             mkdirr('clusters/%s/%d'%(w[:3],i))
             for j in cluster:
-                fname = 'clusters/%s/%d/%d.png'%(w[:3],i,j)
+                class_per_clust[ind].append(subclasses[y_train0[j][2]])
+                fname = 'clusters/%s/%d/%d_true_%s.png'%(w[:3],i,j,y_train0[j][2])
                 imsave(fname,x_train0[j])
+        total_class_per_clust[w[:3]]=class_per_clust
+
+    # see the cluster histograms
+    stds = {'int':0,'euc':0}
+    #correct_labeled={'int':0.0,'euc':0.0}
+    cluster_mat = {'int':[],'euc':[]}
+    for w,clust in total_class_per_clust.iteritems():
+        print 'w',w
+        for c in clust:
+            hist1 = np.histogram(c,bins=[-0.5,0.5,1.5,2.5,3.5,4.5])[0]
+            cluster_mat[w[:3]].append(hist1)
+            #correct_labeled[w[:3]]+=np.max(hist1)
+            #stds[w[:3]]+=np.std(hist1)
+            #stds[w[:3]]+=np.std(c)
+            #print c, np.var(hist1), hist1
+        #correct_labeled[w[:3]] /= len(y_train0)
+    #print 'intra-class std comparing true subclasses with clusters', stds
+    cluster_mat['int']=np.array(cluster_mat['int'])
+    cluster_mat['euc']=np.array(cluster_mat['euc'])
+    #print 'cluster mat',cluster_mat
+    cluster_mat_analysis(cluster_mat)
     plt.show()
     #raw_input('hit and key to end...')
     return
@@ -528,3 +574,4 @@ def mainmain():
 
 if __name__=='__main__':
     mainmain()
+
