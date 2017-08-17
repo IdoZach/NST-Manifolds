@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="99f68a8b-4240-489b-af70-fc7628b514bf" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/plot_3d_mayavi.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/synthesis_analysis.py" afterPath="$PROJECT_DIR$/synthesis_analysis.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/learn_metric.py" afterPath="$PROJECT_DIR$/learn_metric.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vgg_19_keras.py" afterPath="$PROJECT_DIR$/vgg_19_keras.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -16,14 +18,13 @@
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file leaf-file-name="gram_compress.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/gram_compress.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-345">
-              <caret line="112" column="4" lean-forward="false" selection-start-line="112" selection-start-column="4" selection-end-line="112" selection-end-column="4" />
+            <state relative-caret-position="338">
+              <caret line="44" column="13" lean-forward="false" selection-start-line="44" selection-start-column="13" selection-end-line="44" selection-end-column="13" />
               <folding>
                 <element signature="e#0#56#0" expanded="true" />
                 <element signature="e#1587#3449#0" expanded="false" />
@@ -39,8 +40,8 @@
       <file leaf-file-name="fbm_data.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/fbm_data.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1965">
-              <caret line="172" column="21" lean-forward="false" selection-start-line="172" selection-start-column="21" selection-end-line="172" selection-end-column="21" />
+            <state relative-caret-position="396">
+              <caret line="252" column="91" lean-forward="false" selection-start-line="252" selection-start-column="91" selection-end-line="252" selection-end-column="91" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -51,8 +52,8 @@
       <file leaf-file-name="vgg_19_keras.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/vgg_19_keras.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="405">
-              <caret line="281" column="77" lean-forward="true" selection-start-line="281" selection-start-column="8" selection-end-line="281" selection-end-column="77" />
+            <state relative-caret-position="-3352">
+              <caret line="342" column="48" lean-forward="false" selection-start-line="342" selection-start-column="48" selection-end-line="342" selection-end-column="48" />
               <folding>
                 <element signature="e#63#119#0" expanded="true" />
                 <element signature="e#1062#3294#0" expanded="false" />
@@ -66,7 +67,7 @@
                 <element signature="e#31022#33263#0" expanded="false" />
                 <element signature="e#36239#37200#1" expanded="false" />
                 <element signature="e#40526#41172#1" expanded="false" />
-                <element signature="e#48428#49376#1" expanded="false" />
+                <element signature="e#48429#49377#1" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -75,8 +76,8 @@
       <file leaf-file-name="synthesis_analysis.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/synthesis_analysis.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="434">
-              <caret line="85" column="36" lean-forward="false" selection-start-line="85" selection-start-column="36" selection-end-line="85" selection-end-column="36" />
+            <state relative-caret-position="606">
+              <caret line="41" column="29" lean-forward="false" selection-start-line="41" selection-start-column="29" selection-end-line="41" selection-end-column="29" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -87,23 +88,14 @@
       <file leaf-file-name="learn_metric.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/learn_metric.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="390">
-              <caret line="172" column="57" lean-forward="false" selection-start-line="172" selection-start-column="57" selection-end-line="172" selection-end-column="57" />
+            <state relative-caret-position="391">
+              <caret line="400" column="23" lean-forward="false" selection-start-line="400" selection-start-column="23" selection-end-line="400" selection-end-column="23" />
               <folding>
-                <element signature="e#0#31#0" expanded="true" />
-                <element signature="e#3837#4433#1" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="draw_ellipse.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/draw_ellipse.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="435">
-              <caret line="42" column="58" lean-forward="false" selection-start-line="42" selection-start-column="58" selection-end-line="42" selection-end-column="58" />
-              <folding>
-                <element signature="e#0#18#0" expanded="true" />
+                <element signature="e#0#17#0" expanded="true" />
+                <element signature="e#3743#5762#0" expanded="false" />
+                <element signature="e#8761#13466#0" expanded="false" />
+                <element signature="e#15912#16508#1" expanded="false" />
+                <element signature="e#17929#18619#1" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -112,8 +104,8 @@
       <file leaf-file-name="mu_analysis.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mu_analysis.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="390">
-              <caret line="136" column="25" lean-forward="false" selection-start-line="136" selection-start-column="19" selection-end-line="136" selection-end-column="25" />
+            <state relative-caret-position="337">
+              <caret line="138" column="39" lean-forward="false" selection-start-line="138" selection-start-column="39" selection-end-line="138" selection-end-column="39" />
               <folding>
                 <element signature="e#0#24#0" expanded="true" />
                 <element signature="e#529#614#0" expanded="false" />
@@ -135,21 +127,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>cv2</find>
-      <find>cv2.</find>
-      <find>save_step(self</find>
-      <find>hurst2d</find>
-      <find>std_</find>
-      <find>modified</find>
-      <find>std_out_modified</find>
-      <find>pickle</find>
-      <find>print</find>
-      <find>PCA(</find>
-      <find>plot</find>
-      <find>mplo</find>
-      <find>mpl</find>
-      <find>plt.plot</find>
-      <find>3d</find>
       <find>.eig</find>
       <find>'3d'</find>
       <find>map</find>
@@ -165,6 +142,21 @@
       <find>train_vars_</find>
       <find>prepare_data</find>
       <find>resize</find>
+      <find>= True</find>
+      <find>hold(</find>
+      <find>DrawEllipse</find>
+      <find>isinf</find>
+      <find>fig.sc</find>
+      <find>y_train2</find>
+      <find>yy.b</find>
+      <find>y_train0</find>
+      <find>hold</find>
+      <find>scip</find>
+      <find>stack</find>
+      <find>rcParams</find>
+      <find>legend</find>
+      <find>mkdir</find>
+      <find>assign</find>
     </findStrings>
     <replaceStrings>
       <replace>Conv2D</replace>
@@ -177,25 +169,25 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/dtcwt_trials.py" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/local_phase_model.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/cvae_experiment_fbm.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/fbm_data.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/variational_autoencoder_2d.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/variational_autoencoder.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/learn_metric.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/gans_1.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/syndata.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/dtcwt_trials.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/vaes_modified1.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/cvae_experiment_kth_att2im.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/mu_analysis.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/cvae_1.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/variational_autoencoder_2d_lphp.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/local_phase_model.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/main1.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/gram_compress.py" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/cvae_1.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/vgg_19_keras.py" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/cvae_experiment_kth_att2im.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/cvae_experiment_kth.py" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/gans_1.py" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/cvae_experiment_fbm.py" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/learn_metric.py" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/variational_autoencoder.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/vaes_orig_mnist.py" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/variational_autoencoder_2d.py" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/variational_autoencoder_2d_lphp.py" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/syndata.py" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/vaes_modified1.py" root0="SKIP_INSPECTION" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -234,14 +226,17 @@
         <option value="$PROJECT_DIR$/draw_ellipse.py" />
         <option value="$PROJECT_DIR$/synthesis_analysis.py" />
         <option value="$PROJECT_DIR$/vgg_19_keras.py" />
+        <option value="$PROJECT_DIR$/test_mayavi.py" />
+        <option value="$PROJECT_DIR$/plot_3d_mayavi.py" />
+        <option value="$PROJECT_DIR$/temp1_udi.py" />
         <option value="$PROJECT_DIR$/learn_metric.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="338" />
+    <option name="x" value="625" />
     <option name="y" value="23" />
-    <option name="width" value="1338" />
+    <option name="width" value="1051" />
     <option name="height" value="979" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
@@ -275,20 +270,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="ProjectPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="python_fbm" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="python_fbm" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
+      <pane id="ProjectPane" />
       <pane id="Scratches" />
     </panes>
   </component>
@@ -296,92 +278,19 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$/DeepTextures/Example.ipynb" />
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors" />
   </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
   <component name="RunManager" selected="Python.learn_metric">
-    <configuration default="false" name="vgg_19_keras" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="python_fbm" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/vgg_19_keras.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="synthesis_analysis" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="python_fbm" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/synthesis_analysis.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="fbm_data" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="python_fbm" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/fbm_data.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="learn_metric" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="python_fbm" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/learn_metric.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="draw_ellipse" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="python_fbm" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/draw_ellipse.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -529,20 +438,105 @@
       <option name="USE_KEYWORD" value="false" />
       <method />
     </configuration>
+    <configuration name="draw_ellipse" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="python_fbm" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/draw_ellipse.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+    </configuration>
+    <configuration name="learn_metric" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="python_fbm" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/learn_metric.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+    </configuration>
+    <configuration name="plot_3d_mayavi" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="python_fbm" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/plot_3d_mayavi.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+    </configuration>
+    <configuration name="temp1_udi" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="python_fbm" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/temp1_udi.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+    </configuration>
+    <configuration name="vgg_19_keras" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="python_fbm" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/vgg_19_keras.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+    </configuration>
     <list size="5">
       <item index="0" class="java.lang.String" itemvalue="Python.vgg_19_keras" />
-      <item index="1" class="java.lang.String" itemvalue="Python.synthesis_analysis" />
-      <item index="2" class="java.lang.String" itemvalue="Python.fbm_data" />
-      <item index="3" class="java.lang.String" itemvalue="Python.learn_metric" />
-      <item index="4" class="java.lang.String" itemvalue="Python.draw_ellipse" />
+      <item index="1" class="java.lang.String" itemvalue="Python.learn_metric" />
+      <item index="2" class="java.lang.String" itemvalue="Python.draw_ellipse" />
+      <item index="3" class="java.lang.String" itemvalue="Python.plot_3d_mayavi" />
+      <item index="4" class="java.lang.String" itemvalue="Python.temp1_udi" />
     </list>
     <recent_temporary>
       <list size="5">
         <item index="0" class="java.lang.String" itemvalue="Python.learn_metric" />
-        <item index="1" class="java.lang.String" itemvalue="Python.vgg_19_keras" />
-        <item index="2" class="java.lang.String" itemvalue="Python.draw_ellipse" />
-        <item index="3" class="java.lang.String" itemvalue="Python.fbm_data" />
-        <item index="4" class="java.lang.String" itemvalue="Python.synthesis_analysis" />
+        <item index="1" class="java.lang.String" itemvalue="Python.temp1_udi" />
+        <item index="2" class="java.lang.String" itemvalue="Python.plot_3d_mayavi" />
+        <item index="3" class="java.lang.String" itemvalue="Python.vgg_19_keras" />
+        <item index="4" class="java.lang.String" itemvalue="Python.draw_ellipse" />
       </list>
     </recent_temporary>
   </component>
@@ -550,14 +544,14 @@
     <option name="remove_strategy" value="false" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="338" y="23" width="1338" height="979" extended-state="0" />
-    <editor active="true" />
+    <frame x="625" y="23" width="1051" height="979" extended-state="0" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13591495" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.10406343" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32894737" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3267544" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22807017" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -579,27 +573,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/temp1.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="14" column="0" lean-forward="false" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main1.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/temp1.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/main1.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -710,7 +683,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="194">
           <caret line="496" column="8" lean-forward="false" selection-start-line="496" selection-start-column="8" selection-end-line="496" selection-end-column="8" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -795,7 +767,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="369">
           <caret line="1095" column="22" lean-forward="true" selection-start-line="1095" selection-start-column="22" selection-end-line="1095" selection-end-column="22" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -860,90 +831,52 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
           <caret line="6" column="18" lean-forward="false" selection-start-line="6" selection-start-column="18" selection-end-line="6" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/learn_metric_trials.py" />
+    <entry file="file:///usr/local/lib/python2.7/dist-packages/matplotlib/collections.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="525">
+          <caret line="609" column="12" lean-forward="true" selection-start-line="609" selection-start-column="12" selection-end-line="609" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test_mayavi.py" />
+    <entry file="file://$PROJECT_DIR$/draw_ellipse.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="799">
+          <caret line="50" column="22" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="52" selection-end-column="0" />
           <folding>
             <element signature="e#0#18#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/learn_metric_trials.py">
+    <entry file="file://$PROJECT_DIR$/plot_3d_mayavi.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="38" lean-forward="true" selection-start-line="5" selection-start-column="38" selection-end-line="5" selection-end-column="38" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/gram_compress.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-345">
-          <caret line="112" column="4" lean-forward="false" selection-start-line="112" selection-start-column="4" selection-end-line="112" selection-end-column="4" />
+        <state relative-caret-position="663">
+          <caret line="39" column="0" lean-forward="true" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
           <folding>
-            <element signature="e#0#56#0" expanded="true" />
-            <element signature="e#1587#3449#0" expanded="false" />
-            <element signature="e#4006#4187#0" expanded="false" />
-            <element signature="e#4306#4401#0" expanded="false" />
-            <element signature="e#4818#5046#0" expanded="false" />
-            <element signature="e#5236#7865#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/local/lib/python2.7/dist-packages/matplotlib/collections.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="525">
-          <caret line="609" column="12" lean-forward="true" selection-start-line="609" selection-start-column="12" selection-end-line="609" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mu_analysis.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="136" column="25" lean-forward="false" selection-start-line="136" selection-start-column="19" selection-end-line="136" selection-end-column="25" />
-          <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#529#614#0" expanded="false" />
-            <element signature="e#1907#2473#0" expanded="false" />
-            <marker date="1498815705274" expanded="true" signature="3432:3658" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/draw_ellipse.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="42" column="58" lean-forward="false" selection-start-line="42" selection-start-column="58" selection-end-line="42" selection-end-column="58" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#0#23#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/fbm_data.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1965">
-          <caret line="172" column="21" lean-forward="false" selection-start-line="172" selection-start-column="21" selection-end-line="172" selection-end-column="21" />
+        <state relative-caret-position="396">
+          <caret line="252" column="91" lean-forward="false" selection-start-line="252" selection-start-column="91" selection-end-line="252" selection-end-column="91" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/synthesis_analysis.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="434">
-          <caret line="85" column="36" lean-forward="false" selection-start-line="85" selection-start-column="36" selection-end-line="85" selection-end-column="36" />
-          <folding>
-            <element signature="e#0#31#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/vgg_19_keras.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="281" column="77" lean-forward="true" selection-start-line="281" selection-start-column="8" selection-end-line="281" selection-end-column="77" />
+        <state relative-caret-position="-3352">
+          <caret line="342" column="48" lean-forward="false" selection-start-line="342" selection-start-column="48" selection-end-line="342" selection-end-column="48" />
           <folding>
             <element signature="e#63#119#0" expanded="true" />
             <element signature="e#1062#3294#0" expanded="false" />
@@ -957,18 +890,69 @@
             <element signature="e#31022#33263#0" expanded="false" />
             <element signature="e#36239#37200#1" expanded="false" />
             <element signature="e#40526#41172#1" expanded="false" />
-            <element signature="e#48428#49376#1" expanded="false" />
+            <element signature="e#48429#49377#1" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/synthesis_analysis.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="606">
+          <caret line="41" column="29" lean-forward="false" selection-start-line="41" selection-start-column="29" selection-end-line="41" selection-end-column="29" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gram_compress.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="338">
+          <caret line="44" column="13" lean-forward="false" selection-start-line="44" selection-start-column="13" selection-end-line="44" selection-end-column="13" />
+          <folding>
+            <element signature="e#0#56#0" expanded="true" />
+            <element signature="e#1587#3449#0" expanded="false" />
+            <element signature="e#4006#4187#0" expanded="false" />
+            <element signature="e#4306#4401#0" expanded="false" />
+            <element signature="e#4818#5046#0" expanded="false" />
+            <element signature="e#5236#7865#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/temp1_udi.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="54" lean-forward="false" selection-start-line="7" selection-start-column="54" selection-end-line="7" selection-end-column="54" />
+          <folding>
+            <element signature="e#0#31#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mu_analysis.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="337">
+          <caret line="138" column="39" lean-forward="false" selection-start-line="138" selection-start-column="39" selection-end-line="138" selection-end-column="39" />
+          <folding>
+            <element signature="e#0#24#0" expanded="true" />
+            <element signature="e#529#614#0" expanded="false" />
+            <element signature="e#1907#2473#0" expanded="false" />
+            <marker date="1498815705274" expanded="true" signature="3432:3658" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/learn_metric.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="172" column="57" lean-forward="false" selection-start-line="172" selection-start-column="57" selection-end-line="172" selection-end-column="57" />
+        <state relative-caret-position="391">
+          <caret line="400" column="23" lean-forward="false" selection-start-line="400" selection-start-column="23" selection-end-line="400" selection-end-column="23" />
           <folding>
-            <element signature="e#0#31#0" expanded="true" />
-            <element signature="e#3837#4433#1" expanded="false" />
+            <element signature="e#0#17#0" expanded="true" />
+            <element signature="e#3743#5762#0" expanded="false" />
+            <element signature="e#8761#13466#0" expanded="false" />
+            <element signature="e#15912#16508#1" expanded="false" />
+            <element signature="e#17929#18619#1" expanded="false" />
           </folding>
         </state>
       </provider>

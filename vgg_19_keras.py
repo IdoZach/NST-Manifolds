@@ -1178,7 +1178,7 @@ if __name__ == "__main__":
         print 'GENERATING DATA'
         syndata.save_step()
 
-    just_save_dataset_imgs = True
+    just_save_dataset_imgs = False
 
     if just_save_dataset_imgs: # mainly for learn_metric.py file
         syndata =SynData(dataset=dataset_type)
