@@ -386,7 +386,7 @@ def mainmain():
     genEmb,H, explained_var = Metric.learnMetric(data)
 
     ## discrete geodesic k-means
-    num_clusters = 3
+    num_clusters = 6
 
 
     G, weights = Metric.calcDistance(data,genEmb,explained_var[:emb_dim],H)
@@ -422,7 +422,7 @@ def mainmain():
     total_class_per_clust = {'int':[],'euc':[]}
     for w,assignment in assignments.iteritems():
         mkdirr('clusters/%s'%w[:3])
-        class_per_clust = [ [], [], [], [], [] ]
+        class_per_clust = [ [] for i in range(num_clusters) ]
         for ind,(i,cluster) in enumerate(assignment.iteritems()):
             mkdirr('clusters/%s/%d'%(w[:3],i))
             for j in cluster:
